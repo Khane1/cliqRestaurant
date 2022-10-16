@@ -1,0 +1,34 @@
+{
+  "name": "svelte-app",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "start": "sirv public --no-clear --single"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^17.0.0",
+    "@rollup/plugin-node-resolve": "^11.0.0",
+    "rollup": "^2.3.4",
+    "rollup-plugin-css-only": "^3.1.0",
+    "rollup-plugin-livereload": "^2.0.0",
+    "rollup-plugin-svelte": "^7.0.0",
+    "rollup-plugin-terser": "^7.0.0",
+    "svelte": "^3.0.0"
+  },
+  "dependencies": {
+    "@macfja/svelte-persistent-store": "^2.0.0",
+    "@rollup/plugin-replace": "^4.0.0",
+    "axios": "^0.27.2",
+    "dotenv": "^16.0.2",
+    "firebase": "^9.9.3",
+    "page": "^1.11.6",
+    "sirv-cli": "^2.0.0",
+    "svelte-notifications": "^0.9.97",
+    "svelte-qrcode": "^1.0.0",
+    "svelte-simple-modal": "^1.4.1",
+    "uuid": "^8.3.2"
+  }
+}

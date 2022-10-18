@@ -17,7 +17,7 @@
                 ? (selectedSub = selectOption.subMenu[0].id)
                 : (selectedSub = "*");
         }}
-        class="flex justify-center text-md"
+        class="flex justify-center text-md px-3"
         type="submit"
     >
         {#if placeholder}

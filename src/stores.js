@@ -7,7 +7,7 @@ export function notifyUser(text, addNotification, type) {
         text: text.length == 0 ? "Done" : text,
         position: "bottom-center",
         type: type,
-        removeAfter: 2000,
+        removeAfter: 5000,
     });
 }
 export let pageNameStore = writable([]);

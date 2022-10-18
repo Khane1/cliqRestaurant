@@ -17,28 +17,44 @@
     let price = $editItemDetailStore.price;
     let name = $editItemDetailStore.name;
     let updateItem = () => {
-        submitItemUpdate(
-            {
-                avatar: avatar,
-                description: Description,
-                itemId: $editItemDetailStore.itemId,
-                name: name,
-                price: price,
-                subItemId: $editItemDetailStore.subItemId,
-                categoryId: $editItemDetailStore.categoryId,
-                menuId: $editItemDetailStore.menuId,
-                originalName: $editItemDetailStore.originalName,
-            },
-            $editItemDetailStore.originalName,
-            avatar != $editItemDetailStore.avatar //is this a new Link
-        ).then((e) => {
+        if (
+            avatar == $editItemDetailStore.avatar &&
+            Description == $editItemDetailStore.description &&
+            price == $editItemDetailStore.price &&
+            name == $editItemDetailStore.name
+        ) {
             notifyUser(
-                "Updated refresh to see changes " + name,
+                "No changes made to " + name,
                 addNotification,
-                e.message
+                "default"
             );
             history.back();
-        });
+        } else {
+            submitItemUpdate(
+                {
+                    avatar: avatar,
+                    description: Description,
+                    itemId: $editItemDetailStore.itemId,
+                    name: name,
+                    price: price,
+                    subItemId: $editItemDetailStore.subItemId,
+                    categoryId: $editItemDetailStore.categoryId,
+                    menuId: $editItemDetailStore.menuId,
+                    originalName: $editItemDetailStore.originalName,
+                },
+                $editItemDetailStore.originalName,
+                avatar != $editItemDetailStore.avatar //is this a new Link
+            ).then((e) => {
+                notifyUser(
+                    e.message == "success"
+                        ? "Updated "+name+"! Refresh to see changes " 
+                        : "An error occured!",
+                    addNotification,
+                    e.message
+                );
+                history.back();
+            });
+        }
     };
 </script>
 
@@ -78,5 +94,3 @@
         {/if}
     </div>
 </BodyWrapper>
-
-{JSON.stringify($editItemDetailStore)}

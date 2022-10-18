@@ -24,12 +24,8 @@ export function changeToNextScreen(number) {
   });
 }
 export function getfbCategories(uid) {
-  getfbMenu(uid)
-  getCategories(uid).then(async (fbValue) => {
-      categoryStore.update((e) => {
-          return  {value:fbValue,uid:uid} ;
-      });
-  });
+  getfbMenu(uid);
+  getCategories(uid);
 }
 export function customerOrder(name){
   getCategoriesForOrder(name).then(async (val)=>{
@@ -38,9 +34,5 @@ export function customerOrder(name){
 }
 
 export function getfbMenu(uid) {
-  getMenuItems(uid).then(async (fbValue) => {
-    fbMenuStore.update((e) => {
-          return  {value:fbValue} ;
-      });
-  });
+  getMenuItems(uid);
 }

@@ -2,9 +2,9 @@
     import { fly } from "svelte/transition";
     import { stringify } from "uuid";
     import {
-        completeOrder,
-        OrderItemComplete,
-    } from "../../firebase/functions/restaurant_funcs/orders";
+        complete_Order,
+        OrderItem_Complete,
+    } from "../../firebase/functions/restaurant_funcs/restaurants";
     import { MoneyFormat } from "../../func_essential";
     import { userModelStore } from "../../stores";
     export let order, dataId;
@@ -51,7 +51,7 @@
                         type="checkbox"
                         disabled
                         checked={order.status == "served"}
-                        on:click={OrderItemComplete(
+                        on:click={OrderItem_Complete (
                             $userModelStore.uid,
                             dataId
                         )}
@@ -63,7 +63,7 @@
                             : ''}rounded-full"
                         type="checkbox"
                         checked={order.status == "served"}
-                        on:click={OrderItemComplete(
+                        on:click={OrderItem_Complete(
                             $userModelStore.uid,
                             dataId
                         )}

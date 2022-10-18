@@ -80,7 +80,7 @@
 
 <BodyWrapper>
     {#if selectedId == 'welcome' && $userStore != "authorized"}
-        <div class="flex justify-center">
+        <div class="flex justify-center h-1/2">
             <RestaurantLandingPage bind:selectedId bind:selectedSub/>
         </div>
     {:else if selectedId == 'welcome' && $userStore == "authorized"}
@@ -163,7 +163,7 @@
 {#if !readyToEat}
     <AToButton bind:order bind:checkOutPage bind:readyToEat bind:notes />
 {/if}
-{#if $screenSizeStore.size < 800}
+{#if $screenSizeStore.size < 800 && selectedId != 'welcome'}
     <!-- ....................Floating Top Items......................... -->
     <div
         class="{scrollPosition < 50
@@ -179,6 +179,7 @@
                     ? $customerOrderStore.restaurant
                     : $userModelStore.displayName}
             />
+    <!-- Top Closing button -->
             {#if checkOutPage}
                 <span
                     class="font-bold text-xl mr-10 border rounded-full px-3 py-1 bg-red-500 text-white"
@@ -188,6 +189,14 @@
                     }}
                 >
                     X
+                </span>
+                {:else}
+                <span class="mr-10 rounded-full px-3 py-1 border shadow"
+                on:click={() => {
+                    checkOutPage = !checkOutPage;
+                }}
+                >
+                    <img height="20" width="20" src='/favicon.png' alt="plate"/>
                 </span>
             {/if}
         </div>
@@ -216,14 +225,14 @@
     <div
         class="{scrollPosition < 50
             ? 'top-2 mt-0'
-            : 'top-0 my-0'} fixed w-full py-3"
+            : 'top-0 my-0'} fixed w-full py-2 "
     >
         <RestaurantTitle
             title={$userStore != "authorizing"
                 ? $customerOrderStore.restaurant
                 : ""}
         />
-            <span class="text-lg font-semibold">{"Current Table " + $customerOrderStore.table} </span>
+            <span class="text-md">{"Current table " + $customerOrderStore.table} </span>
     </div>
 {/if}
 

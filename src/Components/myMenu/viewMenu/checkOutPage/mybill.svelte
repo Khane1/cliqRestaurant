@@ -21,14 +21,14 @@
         </div>
     </div>
     <div class="mt-10">
-        Requests
+       Special Requests
         <div class=" px-10 py-2">
             {#each $customerOrderHistory as order}
                 <div class="flex justify-between ">
                     <span>{order.val}</span>
                     <span
                         >{order.notes.length == 0
-                            ? "No requests made"
+                            ? "No special requests made"
                             : order.notes}</span
                     >
                 </div>

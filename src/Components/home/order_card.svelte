@@ -53,7 +53,7 @@
                     {order.notes}
                 </div>
             {:else}
-                No Request
+                No note request
             {/if}
         </div>
         <div>ugx.{MoneyFormat(order.total)}</div>

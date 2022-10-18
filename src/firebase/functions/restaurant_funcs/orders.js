@@ -1,13 +1,13 @@
-import { doc, onSnapshot, query, collection, where, updateDoc, arrayUnion, orderBy,limit } from "@firebase/firestore";
+import { doc, onSnapshot, query, collection, where, updateDoc, arrayUnion, orderBy } from "@firebase/firestore";
 import { activeOrderItemDetailStore, activeOrderStore, pendingPaymentStore } from "../../../stores";
 
 
 export async function getMyOrders(uid, activeOrders,db) {
     console.log(activeOrders);
     try {
-        const conditions = [orderBy('orderTimestamp'), where('state', '==', 'active'),limit(100)]
+        const conditions = [orderBy('orderTimestamp'), where('state', '==', 'active'),]
         let qry = query(collection(db, 'restaurants', uid, 'orders'), ...conditions);
-        let detailsQry = query(collection(db, 'restaurants', uid, 'order_detail'), where('state', '==', 'active'),limit)
+        let detailsQry = query(collection(db, 'restaurants', uid, 'order_detail'), where('state', '==', 'active'))
         onSnapshot(qry, async (val) => {
             activeOrderStore.update((e) => {
                 return val.docs
@@ -30,7 +30,7 @@ export async function getMyOrders(uid, activeOrders,db) {
 
 export async function getPendingPayments(uid,db) {
     try {
-        const conditions = [orderBy('orderTimestamp'), where('state', '==', 'payment_pending',limit(100))]
+        const conditions = [orderBy('orderTimestamp'), where('state', '==', 'payment_pending')]
         let qry = query(collection(db, 'restaurants', uid, 'orders'), ...conditions);
         onSnapshot(qry, async (val) => {
             pendingPaymentStore.update((e) => {

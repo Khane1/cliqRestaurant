@@ -73,12 +73,10 @@
                 alert(e);
             });
     }
-
     onMount((e) => {
         updateTableNumber(1);
     });
 </script>
-
 <BodyWrapper>
     <div class="space-y-4">
         <Header title="Create Qr Codes" />
@@ -181,7 +179,7 @@
                     >
                     <div class="p-4 bg-white">
                         <GenerateQr
-                            codeValue="/customer_order/{$userModelStore.displayName}/{downloadOption ==
+                            codeValue="{window.location.origin}/customer_order/{$userModelStore.displayName}/{downloadOption ==
                             'multiple'
                                 ? $downloadQrTableStore.table
                                 : value}"

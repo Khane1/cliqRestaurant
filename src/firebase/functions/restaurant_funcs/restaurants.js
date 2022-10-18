@@ -1,6 +1,6 @@
 import {
     setDoc, doc, getFirestore, collection,
-    getDocs, query, where, updateDoc, arrayUnion, getDoc,onSnapshot
+    getDocs, query, where, updateDoc, arrayUnion, getDoc,onSnapshot,limit
 } from 'Firebase/firestore';
 import { userModelStore, menuListStore, categoryStore, fbMenuStore, } from '../../../stores';
 import { app, auth } from '../../firebase.js'
@@ -51,7 +51,7 @@ export async function getCategories(uid) {
     })
 }
 export async function getMenuItems(uid) {
-    onSnapshot(query(collection(db, 'menuItems'), where("menuId", "==", uid)),async(fb)=>{
+    onSnapshot(query(collection(db, 'menuItems'), where("menuId", "==", uid),limit(100)),async(fb)=>{
         let list = [];
             fb.docs.forEach((val) => {
                 list =[...list,val.data()]

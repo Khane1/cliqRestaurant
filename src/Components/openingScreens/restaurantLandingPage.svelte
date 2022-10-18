@@ -1,24 +1,62 @@
 <script>
     import { fade, fly } from "svelte/transition";
-    import { categoryStore, customerOrderStore, userModelStore, userStore } from "../../stores";
-    export let selectedId,selectedSub;
+    import {
+        categoryStore,
+        customerOrderStore,
+        userModelStore,
+        userStore,
+    } from "../../stores";
+    export let selectedId, selectedSub;
 </script>
 
-<div class="mt-40 " in:fly="{{ y: 100, duration: 2000 }}" out:fly="{{ y: 50, duration: 500 }}">
-    <div class="text-2xl text-slate-600">
-        Welcome to {
-            $userStore=='authorized'?$userModelStore.displayName:
-            $customerOrderStore.restaurant}!
+{#if $userStore != "authorized"}
+    <div
+        class="mt-40 "
+        in:fly={{ y: 100, duration: 2000 }}
+        out:fly={{ y: 50, duration: 500 }}
+    >
+        <div class="text-2xl text-slate-600">
+            Welcome to {$userStore == "authorized"
+                ? $userModelStore.displayName
+                : $customerOrderStore.restaurant}!
+        </div>
+        <span
+            class="flex justify-center"
+            on:click={() => {
+                selectedId =
+                    $categoryStore.value != undefined
+                        ? $categoryStore.value[0].categoryId
+                        : 0;
+                selectedSub =
+                    $categoryStore.value != undefined
+                        ? $categoryStore.value[0].subMenu.length > 0
+                            ? $categoryStore.value[0].subMenu[0].id
+                            : "*"
+                        : "*";
+            }}>View Our Menu</span
+        >
     </div>
-    <span class="flex justify-center" on:click={()=>
-    {
-        selectedId=
-        $categoryStore.value!=undefined?
-        $categoryStore.value[0].categoryId:0
-        selectedSub =
-        $categoryStore.value!=undefined?
-        $categoryStore.value[0].subMenu.length>0?$categoryStore.value[0].subMenu[0].id:'*':
-        '*'
-    }
-    }>View Our Menu</span>
-</div>
+{:else}
+    <div class="mt-40 ">
+        <div class="text-2xl text-slate-600">
+            Welcome to {$userStore == "authorized"
+                ? $userModelStore.displayName
+                : $customerOrderStore.restaurant}!
+        </div>
+        <span
+            class="flex justify-center"
+            on:click={() => {
+                selectedId =
+                    $categoryStore.value != undefined
+                        ? $categoryStore.value[0].categoryId
+                        : 0;
+                selectedSub =
+                    $categoryStore.value != undefined
+                        ? $categoryStore.value[0].subMenu.length > 0
+                            ? $categoryStore.value[0].subMenu[0].id
+                            : "*"
+                        : "*";
+            }}>View Our Menu</span
+        >
+    </div>
+{/if}

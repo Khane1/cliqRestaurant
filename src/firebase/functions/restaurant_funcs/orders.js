@@ -1,9 +1,8 @@
 import { doc, onSnapshot, query, collection, where, updateDoc, arrayUnion, orderBy } from "@firebase/firestore";
 import { activeOrderItemDetailStore, activeOrderStore, pendingPaymentStore } from "../../../stores";
-import { db } from "./restaurants";
 
 
-export async function getMyOrders(uid, activeOrders) {
+export async function getMyOrders(uid, activeOrders,db) {
     console.log(activeOrders);
     try {
         const conditions = [orderBy('orderTimestamp'), where('state', '==', 'active')]
@@ -29,7 +28,7 @@ export async function getMyOrders(uid, activeOrders) {
     }
 }
 
-export async function getPendingPayments(uid) {
+export async function getPendingPayments(uid,db) {
     try {
         const conditions = [orderBy('orderTimestamp'), where('state', '==', 'payment_pending')]
         let qry = query(collection(db, 'restaurants', uid, 'orders'), ...conditions);
@@ -44,7 +43,7 @@ export async function getPendingPayments(uid) {
     }
 }
 
-export async function OrderItemComplete(uid, dataId) {
+export async function OrderItemComplete(uid, dataId,db) {
     try {
         return await updateDoc(doc(db, 'restaurants', uid, 'order_detail', dataId), {
             status: 'served',
@@ -53,16 +52,11 @@ export async function OrderItemComplete(uid, dataId) {
         console.log(error);
     }
 }
-export async function completeOrder(uid, customerId, enumComplete) {
+export async function completeOrder(uid, customerId, enumComplete,db) {
     try {
         await updateDoc(doc(db, 'restaurants', uid, 'orders', customerId), {
             state: enumComplete,
         });
-
-        // return await updateDoc(doc(db, 'restaurants', uid, 'order_detail', dataId), {
-        //     state: 'complete',
-        // });
-        // getMyOrders(uid,[])
     } catch (error) {
         console.log(error);
     }

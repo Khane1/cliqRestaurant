@@ -28,10 +28,17 @@
         return (page = ErrorPage);
     };
     router("/", () => {
-        pageNameStore.update((e) => {
-            return { pageName: "login" };
+        if($userStore=='authorized'){
+            pageNameStore.update((e) => {
+            return { pageName: "home" };
         });
-        return (page = OpeningScreen);
+        return (page = Home);
+        }else{
+            pageNameStore.update((e) => {
+                return { pageName: "login" };
+            });
+            return (page = OpeningScreen);
+        }
     });
     router("/signUp", () => {
         pageNameStore.update((e) => {

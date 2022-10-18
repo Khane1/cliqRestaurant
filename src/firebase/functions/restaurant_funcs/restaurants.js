@@ -1,44 +1,65 @@
 import {
     setDoc, doc, getFirestore, collection,
-    getDocs, query, where, updateDoc, arrayUnion, getDoc,
+    getDocs, query, where, updateDoc, arrayUnion, getDoc,onSnapshot
 } from 'Firebase/firestore';
-import { userModelStore, menuListStore, categoryStore, } from '../../../stores';
+import { userModelStore, menuListStore, categoryStore, fbMenuStore, } from '../../../stores';
 import { app, auth } from '../../firebase.js'
 import { createNewBusiness } from './businessLogic';
 import { uploadItemImage } from './ImageUpload';
-import { getMyOrders } from './orders';
+import { completeOrder, getMyOrders,getPendingPayments,OrderItemComplete } from './orders';
 import { v4 } from 'uuid'
 export let db = getFirestore(app);
 const restaurantDoc = (userId) => doc(db, "restaurants", userId)
 const menuDoc = (restaurantId) => doc(db, 'menu', restaurantId)
 
-export async function getCategories(uid) {
-    return await getDocs(collection(db, 'restaurants', uid, 'menu')).then((fb) => {
-        let list = [];
-        fb.docs.forEach((val) => {
-            list.push(val.data())
-        })
-        return list;
-    })
-}
 
 export async function getAllMyOrders(uid, activeOrders) {
-    return await getMyOrders(uid, activeOrders)
+    return await getMyOrders(uid, activeOrders,db)
 }
-
+export async function OrderItem_Complete(uid,dataId){
+    return await OrderItemComplete(uid,dataId,db)
+}
+export async function complete_Order(uid, customerId, enumComplete){
+    return await completeOrder(uid, customerId, enumComplete,db)
+}
+export async function getPending_Payments(uid) {
+    return await getPendingPayments(uid,db);
+}
 export async function getCategoriesForOrder(name) {
     return await getDocs(query(collection(db, 'restaurants'), where("businessName", "==", name))).then((res) => {
         return res.docs[0].id
     })
 }
 
-export async function getMenuItems(uid) {
-    return await getDocs(query(collection(db, 'menuItems'), where("menuId", "==", uid))).then((fb) => {
+
+export async function getCategories(uid) {
+    // return await getDocs(collection(db, 'restaurants', uid, 'menu')).then((fb) => {
+    //     let list = [];
+    //     fb.docs.forEach((val) => {
+    //         list.push(val.data())
+    //     })
+    //     return list;
+    // })
+    onSnapshot(query(collection(db, 'restaurants', uid, 'menu')),async(fb)=>{
         let list = [];
-        fb.docs.forEach((val) => {
-            list.push(val.data())
-        })
-        return list;
+            fb.docs.forEach((val) => {
+                list =[...list,val.data()]
+            })
+            categoryStore.update((e) => {
+                return  {value:list,uid:uid} ;
+            });
+    })
+}
+export async function getMenuItems(uid) {
+    onSnapshot(query(collection(db, 'menuItems'), where("menuId", "==", uid)),async(fb)=>{
+        let list = [];
+            fb.docs.forEach((val) => {
+                list =[...list,val.data()]
+            })
+            fbMenuStore.update((e) => {
+                return  {value:list} ;
+            });
+
     })
 }
 ///////////////////////Business Signup/////////////////////////////////////////
@@ -56,7 +77,7 @@ export async function createCategory(data) {
             subMenu: data.submenu,
             menuId: auth.currentUser.uid,
             categoryId: data.categoryId,
-            hasSubmenu: data.hasSubmenu
+            hasSubmenu: false
         }).then((e) => {
             return { name: data.title, message: 'success', created: true }
         })
@@ -74,6 +95,7 @@ export async function createSubItems(data) {
             await data.submenu.forEach(async element => {
                 console.log(element);
                 await updateDoc(doc(db, 'restaurants', auth.currentUser.uid, 'menu', element.cat_name,), {
+                    hasSubmenu:true,
                     subMenu: arrayUnion({
                         value: element.value,
                         id: element.id

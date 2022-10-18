@@ -20,16 +20,16 @@
     import { MoneyFormat } from "../../../func_essential";
     import Mybill from "../viewMenu/checkOutPage/mybill.svelte";
     import { stringify } from "uuid";
-    let selectedId =
-        $categoryStore.value != null && $categoryStore.value.length > 0
-            ? $categoryStore.value[0].categoryId
-            : 0;
+    import RestaurantLandingPage from "../../openingScreens/restaurantLandingPage.svelte";
+    let selectedId = 'welcome';
     let selectOption =
         $categoryStore.value != null && $categoryStore.value.length > 0
             ? $categoryStore.value[0]
-            : 0;
+            : "";
     let selectedSub =
-        $categoryStore.value != null && $categoryStore.value.length > 0
+        $categoryStore.value != null &&
+        $categoryStore.value.length > 0 &&
+        $categoryStore.value[0].subMenu.length > 0
             ? $categoryStore.value[0].subMenu[0].id
             : 0;
     let list = [];
@@ -78,15 +78,21 @@
 
     $: total = order.reduce((a, { price, count }) => a + price * count, 0);
 </script>
+
 <BodyWrapper>
-    {#if selectedId == 0 && $userStore!='authorized'}
+    {#if selectedId == 'welcome' && $userStore != "authorized"}
         <div class="flex justify-center">
-            <div>Welcome to {$customerOrderStore.restaurant}</div>
+            <RestaurantLandingPage bind:selectedId bind:selectedSub/>
         </div>
-        {:else if selectedId == 0 && $userStore=='authorized'}
-        <div  class="flex justify-center">This is the menu your customer sees.</div>
+    {:else if selectedId == 'welcome' && $userStore == "authorized"}
+        <div class="flex justify-center">
+            This is the menu your customer sees.
+        </div>
+        <div class="flex justify-center">
+            <RestaurantLandingPage  bind:selectedId bind:selectedSub/>
+        </div>
     {/if}
-    {#if $categoryStore.value != null}
+    {#if $categoryStore.value != null && selectedId!='welcome'}
         {#if checkOutPage == false}
             <!-- ....................Make Order page......................... -->
             {#if $screenSizeStore.size > 800}
@@ -104,6 +110,22 @@
             >
                 {#each $fbMenuStore.value as item}
                     {#if selectedId == item.categoryId && selectedSub == item.subItemId}
+                        <ItemImage
+                            bind:item
+                            bind:order
+                            reduce={() => {
+                                reduceOrder(item.name);
+                            }}
+                            showOption={orderId == item.name}
+                            onclick={() => {
+                                orderId = item.name;
+                                addToOrder(item);
+                                setTimeout((e) => {
+                                    orderId = 1;
+                                }, 7000);
+                            }}
+                        />
+                    {:else if selectedId == item.categoryId && selectedSub == "*"}
                         <ItemImage
                             bind:item
                             bind:order
@@ -173,7 +195,7 @@
         </div>
         {#if $customerOrderListStore.table != undefined}
             <div class="text-lg font-semibold ">
-                <span>{"Current Table " + $customerOrderStore.table}</span>
+                <span >{"Current Table " + $customerOrderStore.table}</span>
             </div>
         {/if}
         {#if !checkOutPage}
@@ -196,7 +218,7 @@
     <div
         class="{scrollPosition < 50
             ? 'top-2 mt-0'
-            : 'top-0 my-0'}  fixed w-full py-3"
+            : 'top-0 my-0'} fixed w-full py-3"
         transition:fly
     >
         <RestaurantTitle
@@ -204,9 +226,7 @@
                 ? $customerOrderStore.restaurant
                 : ""}
         />
-        <div class="text-lg font-semibold ">
-            <span>{"Current Table " + $customerOrderStore.table} </span>
-        </div>
+            <span class="text-lg font-semibold">{"Current Table " + $customerOrderStore.table} </span>
     </div>
 {/if}
 

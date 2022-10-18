@@ -1,5 +1,6 @@
 <script>
     import { onMount } from "svelte";
+    import { userStore } from "../../../../stores";
     export let data;
     let pressed = false;
     let count = 0;
@@ -30,6 +31,7 @@
 <div class=" text-black text-md mt-4">
     {data.description}
 </div>
+{#if $userStore!='authorized'}
 {#if pressed == false}
     <div class="flex justify-center">
         <span
@@ -85,6 +87,7 @@
             </div>
         </div>
     </div>
+{/if}
 {/if}
 
 <style>

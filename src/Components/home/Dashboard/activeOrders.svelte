@@ -8,13 +8,12 @@
     import { onMount } from "svelte";
     import Business from "../business/business.svelte";
     import BodyWrapper from "../../bodyWrapper.svelte";
-    import { getAllMyOrders } from "../../../firebase/functions/restaurant_funcs/restaurants";
+    import { complete_Order, getAllMyOrders } from "../../../firebase/functions/restaurant_funcs/restaurants";
     import { stringify } from "uuid";
     import OrderCard from "../order_card.svelte";
     import { MoneyFormat } from "../../../func_essential";
     import { dataset_dev } from "svelte/internal";
     import {
-        completeOrder,
         enumComplete,
     } from "../../../firebase/functions/restaurant_funcs/orders";
     let selectedId = "all";
@@ -179,7 +178,7 @@
                         class="border rounded-md mx-2 px-5 py-1 bg-blue-500 text-white"
                         on:click={() => {
                             itemDetails.forEach((e) => {
-                                completeOrder(
+                                complete_Order(
                                     $userModelStore.uid,
                                     e.customerId,
                                     enumComplete.pending

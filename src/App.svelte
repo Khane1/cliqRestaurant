@@ -17,9 +17,9 @@
 	import {
 		getAllMyOrders,
 		getCategories,
+        getPending_Payments,
 	} from "./firebase/functions/restaurant_funcs/restaurants";
 	import { customerOrder, getfbCategories } from "./functions_convert";
-	import { getPendingPayments } from "./firebase/functions/restaurant_funcs/orders";
 	let y;
 	function screenSizeChange(y) {
 		screenSizeStore.update((e) => {
@@ -39,7 +39,7 @@
 		}
 		if ($userStore == "authorized") {
 			getfbCategories($userModelStore.uid);
-			getPendingPayments($userModelStore.uid);
+			getPending_Payments($userModelStore.uid);
 			getAllMyOrders(
 				$userModelStore.uid,
 				$activeOrderStore != undefined &&

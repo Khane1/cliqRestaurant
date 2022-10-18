@@ -1,6 +1,6 @@
 <script>
     import { onMount } from "svelte";
-    export let headers = [];///{index:1,title:"title"}
+    export let headers = [];
     export let store;
     function pageSwitch(i) {
         store.update((e) => {
@@ -11,9 +11,6 @@
     function switchPage(index) {
         selected = index;
         pageSwitch(index)
-        // myMenuPages.update((e) => {
-        //     return { index: index };
-        // });
     }
     $: isActive = (val) => {
         return val == selected ? "font-bold text-slate-600" : " text-slate-600";

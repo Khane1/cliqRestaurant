@@ -19,7 +19,7 @@
 		getCategories,
         getPending_Payments,
 	} from "./firebase/functions/restaurant_funcs/restaurants";
-	import { customerOrder, getfbCategories } from "./functions_convert";
+	import { customerOrder, getfbCategories, onLoadApp } from "./functions_convert";
 	let y;
 	function screenSizeChange(y) {
 		screenSizeStore.update((e) => {
@@ -38,15 +38,16 @@
 			});
 		}
 		if ($userStore == "authorized") {
-			getfbCategories($userModelStore.uid);
-			getPending_Payments($userModelStore.uid);
-			getAllMyOrders(
-				$userModelStore.uid,
-				$activeOrderStore != undefined &&
-					$activeOrderStore.order != undefined
-					? $activeOrderStore.order
-					: []
-			);
+			// getfbCategories($userModelStore.uid);
+			// getPending_Payments($userModelStore.uid);
+			// getAllMyOrders(
+			// 	$userModelStore.uid,
+			// 	$activeOrderStore != undefined &&
+			// 		$activeOrderStore.order != undefined
+			// 		? $activeOrderStore.order
+			// 		: []
+			// );
+			onLoadApp($userModelStore.uid)
 		}
 	});
 </script>

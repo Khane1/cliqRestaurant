@@ -3,9 +3,11 @@
     import { onMount } from "svelte";
     import { stringify } from "uuid";
     import {
-        completeOrder,
         enumComplete,
     } from "../../../firebase/functions/restaurant_funcs/orders";
+    import {
+        complete_Order,
+    } from "../../../firebase/functions/restaurant_funcs/restaurants";
     import { MoneyFormat } from "../../../func_essential";
     import {
         pendingPaymentStore,
@@ -146,7 +148,8 @@
                                 table.pop(table[Index]);
                             }
                             customerIds.forEach((customerId) => {
-                                completeOrder(
+                                complete_Order
+                                (
                                     $userModelStore.uid,
                                     customerId,
                                     enumComplete.paid

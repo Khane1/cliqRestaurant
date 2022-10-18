@@ -10,7 +10,6 @@
     } from "../../../stores";
     import BodyWrapper from "../../bodyWrapper.svelte";
     import ItemImage from "../category/createItems/components/itemImage.svelte";
-    import { fly } from "svelte/transition";
     import SubCategoryList from "../viewMenu/menuLists/sub_categoryList.svelte";
     import CategoryList from "../viewMenu/menuLists/categoryList.svelte";
     import AToButton from "../viewMenu/floating/aTO_button.svelte";
@@ -170,7 +169,6 @@
         class="{scrollPosition < 50
             ? 'top-2 mt-0'
             : 'top-0 my-0'}  fixed w-full bg-white  py-3"
-        transition:fly
     >
         <div class="flex justify-between">
             <RestaurantTitle
@@ -219,7 +217,6 @@
         class="{scrollPosition < 50
             ? 'top-2 mt-0'
             : 'top-0 my-0'} fixed w-full py-3"
-        transition:fly
     >
         <RestaurantTitle
             title={$userStore != "authorizing"

@@ -17,6 +17,9 @@
     let list = [];
     let itemDetails = [];
     let table = [];
+    $:table=
+    $activeOrderStore.length!=undefined&& table.length!=undefined&&
+    $activeOrderStore.length!=table.length?[]:table;
     $: getTables = $activeOrderStore.forEach((e) => {
         if (!table.includes(e.data().table)) {
             table = [...table, e.data().table];
@@ -26,18 +29,18 @@
     });
     let business;
     onMount(async (e) => {
-        getAllMyOrders(
-            $userModelStore.uid,
-            $activeOrderStore != undefined &&
-                $activeOrderStore.order != undefined
-                ? $activeOrderStore.order
-                : []
-        );
+        // getAllMyOrders(
+        //     $userModelStore.uid,
+        //     $activeOrderStore != undefined &&
+        //         $activeOrderStore.order != undefined
+        //         ? $activeOrderStore.order
+        //         : []
+        // );
 
         console.log($activeOrderStore.order);
-        activeOrderStore.update((e) => {
-            return [];
-        });
+        // activeOrderStore.update((e) => {
+        //     return [];
+        // });
     });
     $: x = $activeOrderItemDetailStore.forEach((e) => {
         //after getting individual Items

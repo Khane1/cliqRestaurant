@@ -6,21 +6,28 @@ import { userModelStore, menuListStore, categoryStore, fbMenuStore, } from '../.
 import { app, auth } from '../../firebase.js'
 import { createNewBusiness } from './businessLogic';
 import { uploadItemImage } from './ImageUpload';
-import { completeOrder, getMyOrders,getPendingPayments,OrderItemComplete } from './orders';
+import { completeOrder, completeOrderItems, getMyOrders,getPendingPayments,OrderItemComplete } from './orders';
 import { v4 } from 'uuid'
+import { getOrdersByDate } from './historyData';
 export let db = getFirestore(app);
 const restaurantDoc = (userId) => doc(db, "restaurants", userId)
 const menuDoc = (restaurantId) => doc(db, 'menu', restaurantId)
 
 
 export async function getAllMyOrders(uid, activeOrders) {
-    return await getMyOrders(uid, activeOrders,db)
+    return await getMyOrders(uid,db)
+}
+export async function getOrders_ByDate(uid,from,to){
+    return await getOrdersByDate(uid,db,from,to)
 }
 export async function OrderItem_Complete(uid,dataId){
     return await OrderItemComplete(uid,dataId,db)
 }
 export async function complete_Order(uid, customerId, enumComplete){
     return await completeOrder(uid, customerId, enumComplete,db)
+}
+export async function complete_OrderItems(uid, items, enumComplete){
+    return await completeOrderItems(uid, items, enumComplete,db)
 }
 export async function getPending_Payments(uid) {
     return await getPendingPayments(uid,db);
@@ -33,13 +40,6 @@ export async function getCategoriesForOrder(name) {
 
 
 export async function getCategories(uid) {
-    // return await getDocs(collection(db, 'restaurants', uid, 'menu')).then((fb) => {
-    //     let list = [];
-    //     fb.docs.forEach((val) => {
-    //         list.push(val.data())
-    //     })
-    //     return list;
-    // })
     onSnapshot(query(collection(db, 'restaurants', uid, 'menu')),async(fb)=>{
         let list = [];
             fb.docs.forEach((val) => {
@@ -176,13 +176,13 @@ export async function createOrder(businessId, uid, data, restaurant, tableNum, o
                         state: 'active',//closed/// closed when paid
                         order: []
                     }).then(async (e) => {
-                        return await submitOrder(data, orderId, businessId).then((e) => {
+                        return await submitOrder(data, orderId, businessId,orderTime).then((e) => {
                             resolve(e)
                         })
                     })
                 } else {
                     console.log(e.data());
-                    return await submitOrder(data, orderId, businessId).then((e) => {
+                    return await submitOrder(data, orderId, businessId,orderTime).then((e) => {
                         resolve(e)
                     })
                 }
@@ -194,7 +194,7 @@ export async function createOrder(businessId, uid, data, restaurant, tableNum, o
     })
 }
 
-async function submitOrder(data, customerId, uid) {
+async function submitOrder(data, customerId, uid,orderTime) {
     return new Promise((resolve, reject) => {
         return data.forEach(async (order) => {
             let orderId = v4()
@@ -203,6 +203,8 @@ async function submitOrder(data, customerId, uid) {
                 await setDoc(doc(db, 'restaurants', uid, 'order_detail', orderId), {
                     total: (order.count * order.price),
                     qty: order.count,
+                    orderTimestamp:orderTime,
+                    category:order.category,
                     name: order.val,
                     price: order.price
                     , notes: order.notes,

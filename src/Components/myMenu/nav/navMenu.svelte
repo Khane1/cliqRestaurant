@@ -7,6 +7,8 @@
         customerOrderStore,
         customerOrderListStore,
         userStore,
+        customerOrderHistory,
+        historyDataStore,
     } from "../../../stores";
     import BodyWrapper from "../../bodyWrapper.svelte";
     import ItemImage from "../category/createItems/components/itemImage.svelte";
@@ -20,7 +22,9 @@
     import Mybill from "../viewMenu/checkOutPage/mybill.svelte";
     import { stringify } from "uuid";
     import RestaurantLandingPage from "../../openingScreens/restaurantLandingPage.svelte";
-    let selectedId = 'welcome';
+    import { onMount } from "svelte";
+    let selectedId = "welcome";
+    let selectedCat_Name = "";
     let selectOption =
         $categoryStore.value != null && $categoryStore.value.length > 0
             ? $categoryStore.value[0]
@@ -52,6 +56,7 @@
                     data: value,
                     price: value.price,
                     notes: "",
+                    category: selectedCat_Name,
                 },
             ];
         }
@@ -75,28 +80,52 @@
     }
     let scrollPosition = "";
 
-    $: total = order.reduce((a, { price, count }) => a + price * count, 0);
+    $: total =
+        readyToEat == true
+            ? $customerOrderHistory.reduce(
+                  (a, { price, count }) => a + price * count,
+                  0
+              )
+            : order.reduce((a, { price, count }) => a + price * count, 0);
+    onMount(() => {
+        selectedId =
+            $userModelStore.uid != null && $userStore == "authorized"
+                ? $categoryStore.value != undefined
+                    ? $categoryStore.value[0].categoryId
+                    : 0
+                : "welcome";
+        selectedSub = 
+            $categoryStore.value != undefined
+                ? $categoryStore.value[0].subMenu.length > 0
+                    ? $categoryStore.value[0].subMenu[0].id
+                    : "*"
+                : "*";
+    });
 </script>
 
 <BodyWrapper>
-    {#if selectedId == 'welcome' && $userStore != "authorized"}
+    {#if selectedId == "welcome" && $userStore != "authorized"}
         <div class="flex justify-center h-1/2">
-            <RestaurantLandingPage bind:selectedId bind:selectedSub/>
+            <RestaurantLandingPage bind:selectedId bind:selectedSub />
         </div>
-    {:else if selectedId == 'welcome' && $userStore == "authorized"}
+    {:else if selectedId == "welcome" && $userStore == "authorized"}
         <div class="flex justify-center">
             This is the menu your customer sees.
         </div>
         <div class="flex justify-center">
-            <RestaurantLandingPage  bind:selectedId bind:selectedSub/>
+            <RestaurantLandingPage bind:selectedId bind:selectedSub />
         </div>
     {/if}
-    {#if $categoryStore.value != null && selectedId!='welcome'}
+    {#if $categoryStore.value != null && selectedId != "welcome"}
         {#if checkOutPage == false}
             <!-- ....................Make Order page......................... -->
             {#if $screenSizeStore.size > 800}
                 <div class="flex justify-center">
-                    <CategoryList bind:selectedId bind:selectedSub />
+                    <CategoryList
+                        bind:selectedCat_Name
+                        bind:selectedId
+                        bind:selectedSub
+                    />
                 </div>
                 <div class="flex justify-center mt-3">
                     <SubCategoryList bind:selectedId bind:selectedSub />
@@ -108,23 +137,7 @@
                     : 'mt-8'} grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 justify-center"
             >
                 {#each $fbMenuStore.value as item}
-                    {#if selectedId == item.categoryId && selectedSub == item.subItemId}
-                        <ItemImage
-                            bind:item
-                            bind:order
-                            reduce={() => {
-                                reduceOrder(item.name);
-                            }}
-                            showOption={orderId == item.name}
-                            onclick={() => {
-                                orderId = item.name;
-                                addToOrder(item);
-                                setTimeout((e) => {
-                                    orderId = 1;
-                                }, 7000);
-                            }}
-                        />
-                    {:else if selectedId == item.categoryId && selectedSub == "*"}
+                    {#if (selectedId == item.categoryId && selectedSub == item.subItemId) || (selectedId == item.categoryId && selectedSub == "*")}
                         <ItemImage
                             bind:item
                             bind:order
@@ -163,7 +176,7 @@
 {#if !readyToEat}
     <AToButton bind:order bind:checkOutPage bind:readyToEat bind:notes />
 {/if}
-{#if $screenSizeStore.size < 800 && selectedId != 'welcome'}
+{#if $screenSizeStore.size < 800 && selectedId != "welcome"}
     <!-- ....................Floating Top Items......................... -->
     <div
         class="{scrollPosition < 50
@@ -179,7 +192,7 @@
                     ? $customerOrderStore.restaurant
                     : $userModelStore.displayName}
             />
-    <!-- Top Closing button -->
+            <!-- Top Closing button -->
             {#if checkOutPage}
                 <span
                     class="font-bold text-xl mr-10 border rounded-full px-3 py-1 bg-red-500 text-white"
@@ -190,23 +203,30 @@
                 >
                     X
                 </span>
-                {:else}
-                <span class="mr-10 rounded-full px-3 py-1 border shadow"
-                on:click={() => {
-                    checkOutPage = !checkOutPage;
-                }}
+            {:else}
+                <span
+                    class="mr-10 rounded-full px-3 py-1 border shadow"
+                    on:click={() => {
+                        checkOutPage = !checkOutPage;
+                    }}
                 >
-                    <img height="20" width="20" src='/favicon.png' alt="plate"/>
+                    <img
+                        height="20"
+                        width="20"
+                        src="/favicon.png"
+                        alt="plate"
+                    />
                 </span>
             {/if}
         </div>
         {#if $customerOrderListStore.table != undefined}
             <div class="text-lg font-semibold ">
-                <span >{"Current Table " + $customerOrderStore.table}</span>
+                <span>{"Current Table " + $customerOrderStore.table}</span>
             </div>
         {/if}
         {#if !checkOutPage}
             <OptionsCatList
+                bind:selectedCat_Name
                 bind:selectedId
                 bind:selectedSub
                 bind:selectOption
@@ -232,7 +252,9 @@
                 ? $customerOrderStore.restaurant
                 : ""}
         />
-            <span class="text-md">{"Current table " + $customerOrderStore.table} </span>
+        <span class="text-md"
+            >{"Current table " + $customerOrderStore.table}
+        </span>
     </div>
 {/if}
 

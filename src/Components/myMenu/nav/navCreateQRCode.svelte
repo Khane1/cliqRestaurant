@@ -63,7 +63,7 @@
                 createEl.href = url;
 
                 // This is the name of our downloaded file
-                createEl.download = "theAlef Table " + filename;
+                createEl.download = $userModelStore.displayName+" Table " + filename;
                 createEl.click();
                 // window.location.href = image;
             })
@@ -175,7 +175,7 @@
                     <span
                         style="color:{textColor}"
                         class="qrTitle flex justify-center font-bold text-white text-3xl"
-                        >THE ALEF</span
+                        >{$userModelStore.displayName}</span
                     >
                     <div class="p-4 bg-white">
                         <GenerateQr

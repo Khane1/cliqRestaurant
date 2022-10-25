@@ -83,11 +83,9 @@
             return (page = Mymenu);
         } else errorRouteScreen();
     });
-    router("/:name/123/history", (e) => {
-        let name = e.params.name;
+    router("/history", (e) => {
         if (
-            $userModelStore.uid != null &&
-            $userModelStore.displayName == name
+            $userModelStore.uid != null 
         ) {
             pageNameStore.update((e) => {
                 return { pageName: "history" };

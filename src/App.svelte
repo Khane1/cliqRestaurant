@@ -12,14 +12,19 @@
 		pageNameStore,
 		activeOrderStore,
 		customerOrderHistory,
-        clearMemory,
+		clearMemory,
 	} from "./stores";
 	import {
 		getAllMyOrders,
 		getCategories,
-        getPending_Payments,
+		getOrders_ByDate,
+		getPending_Payments,
 	} from "./firebase/functions/restaurant_funcs/restaurants";
-	import { customerOrder, getfbCategories, onLoadApp } from "./functions_convert";
+	import {
+		customerOrder,
+		getfbCategories,
+		onLoadApp,
+	} from "./functions_convert";
 	let y;
 	function screenSizeChange(y) {
 		screenSizeStore.update((e) => {
@@ -31,24 +36,16 @@
 	}
 	onMount((e) => {
 		clearMemory();
-		console.log(window.location.href.includes("customer_order"));
-		if (window.location.href.includes("customer_order")&& $userModelStore.uid==null) {
+		if (
+			window.location.href.includes("customer_order") &&
+			$userModelStore.uid == null
+		) {
 			pageNameStore.update((e) => {
 				return { pageName: "makeOrder" };
 			});
 		}
 		if ($userStore == "authorized") {
-			// getfbCategories($userModelStore.uid);
-			// getPending_Payments($userModelStore.uid);
-			// getAllMyOrders(
-			// 	$userModelStore.uid,
-			// 	$activeOrderStore != undefined &&
-			// 		$activeOrderStore.order != undefined
-			// 		? $activeOrderStore.order
-			// 		: []
-			// );
-			
-			onLoadApp($userModelStore.uid)
+			onLoadApp($userModelStore.uid);
 		}
 	});
 </script>

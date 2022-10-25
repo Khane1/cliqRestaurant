@@ -2,17 +2,20 @@
     import { stringify } from "uuid";
     import { categoryStore } from "../../../../stores";
     export let selectedId;
+    export let selectedCat_Name;
     export let selectedSub;
     export let selectOption;
-    let placeholder = "Categories";
+    let placeholder = "Category";
 </script>
 
 <div class="flex items-center top-5">
     <span class="pr-3 text-md font-semibold">Select </span>
     <select
+        style="text-align: center;"
         bind:value={selectOption}
         on:change={(e) => {
             selectedId = selectOption.categoryId;
+            (selectedCat_Name = selectOption.name),
             selectOption.subMenu.length > 0
                 ? (selectedSub = selectOption.subMenu[0].id)
                 : (selectedSub = "*");
@@ -34,14 +37,7 @@
                             ? "scrollItem px-5 ml-3 font-semibold text-md"
                             : "scrollItem px-5 ml-3 text-md"}
                     >
-                        <span
-                            on:click={() => {
-                                (selectedId = category.categoryId),
-                                    (selectedSub = category.subMenu[0].id);
-                            }}
-                        >
                             {category.name}
-                        </span>
                     </option>
                 {/if}
             {/each}

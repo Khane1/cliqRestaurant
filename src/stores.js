@@ -21,6 +21,7 @@ export let customerOrderListStore = writable([]);
 export let activeOrderStore = writable([])
 export let pendingPaymentStore = writable([])
 export let activeOrderItemDetailStore = writable([])
+export let historyDataStore = writable([])
 export let editItemDetailStore =  persist(writable([]), createLocalStorage(), 'editItemDetailStore')
 
 

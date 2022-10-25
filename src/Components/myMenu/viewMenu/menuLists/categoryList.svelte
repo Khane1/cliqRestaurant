@@ -1,7 +1,7 @@
 <script>
     import { stringify } from "uuid";
     import { categoryStore } from "../../../../stores";
-    export let selectedId;
+    export let selectedId,selectedCat_Name;
     export let selectedSub;
 </script>
 
@@ -10,6 +10,7 @@
         <span
             on:click={() => (
                 (selectedId = category.categoryId),
+                selectedCat_Name= category.name,
                 category.subMenu.length > 0
                     ? (selectedSub = category.subMenu[0].id)
                     : (selectedSub = "*")

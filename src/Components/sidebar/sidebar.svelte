@@ -53,17 +53,17 @@ import { loadUser } from "../../firebase/functions/restaurant_funcs/restaurants"
             ><span> My menu </span>
           </a>
         </li>
-        <!-- <li class="relative">
+        <li class="relative">
           <a
             class=" {$pageNameStore.pageName == 'history'
               ? 'isActive'
               : ''} flex items-center justify-center text-white text-ellipsis transition duration-300 ease-in-out"
-            href="/theAlef/123/history"
+            href="/history"
             data-mdb-ripple="true"
             data-mdb-ripple-color="dark"
             ><span> History </span>
           </a>
-        </li> -->
+        </li>
         
         <li class="relative">
           <a

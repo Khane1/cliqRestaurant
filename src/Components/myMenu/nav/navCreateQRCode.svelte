@@ -1,6 +1,6 @@
 <script>
     import { onMount } from "svelte";
-    import { downloadQrTableStore, userModelStore } from "../../../stores";
+    import { downloadQrTableStore, businessModelStore } from "../../../stores";
 
     import BodyWrapper from "../../bodyWrapper.svelte";
     import Header from "../../resuable/header.svelte";
@@ -63,7 +63,7 @@
                 createEl.href = url;
 
                 // This is the name of our downloaded file
-                createEl.download = $userModelStore.displayName+" Table " + filename;
+                createEl.download = $businessModelStore.businessName+" Table " + filename;
                 createEl.click();
                 // window.location.href = image;
             })
@@ -142,8 +142,8 @@
                                 >Select qr Title</option
                             >
                         {/if}
-                        <option value="#{$userModelStore.displayName}"
-                            >{$userModelStore.displayName}</option
+                        <option value="#{$businessModelStore.businessName}"
+                            >{$businessModelStore.businessName}</option
                         >
                         <option value="#Order Here">Order Here</option>
                         <option value="#Scan To see menu"
@@ -175,11 +175,11 @@
                     <span
                         style="color:{textColor}"
                         class="qrTitle flex justify-center font-bold text-white text-3xl"
-                        >{$userModelStore.displayName}</span
+                        >{$businessModelStore.businessName}</span
                     >
                     <div class="p-4 bg-white">
                         <GenerateQr
-                            codeValue="{window.location.origin}/customer_order/{$userModelStore.displayName}/{downloadOption ==
+                            codeValue="{window.location.origin}/customer_order/{$businessModelStore.businessName}/{downloadOption ==
                             'multiple'
                                 ? $downloadQrTableStore.table
                                 : value}"

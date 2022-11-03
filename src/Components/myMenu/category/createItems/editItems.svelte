@@ -10,6 +10,7 @@
     import AddDetails from "./components/addDetails.svelte";
     import AddImage from "./components/addImage.svelte";
     import { getNotificationsContext } from "svelte-notifications";
+    import { updateMenuItemPin } from "../../../../firebase/functions/restaurant_funcs/restaurants";
     const { addNotification } = getNotificationsContext();
     $: y = $screenSizeStore.size;
     let avatar = $editItemDetailStore.avatar;
@@ -47,7 +48,7 @@
             ).then((e) => {
                 notifyUser(
                     e.message == "success"
-                        ? "Updated "+name+"! Refresh to see changes " 
+                        ? "Updated " + name
                         : "An error occured!",
                     addNotification,
                     e.message
@@ -56,6 +57,26 @@
             });
         }
     };
+    let updatePin = () => {
+        updateMenuItemPin({
+                    originalName: $editItemDetailStore.originalName,
+                    name: name,
+                    pin:
+                        $editItemDetailStore.pin != undefined
+                            ? ($editItemDetailStore.pin =
+                                  !$editItemDetailStore.pin)
+                            : true,
+                }).then((e) => {
+                notifyUser(
+                    e.message == "success"
+                        ? $editItemDetailStore.pin==true?'Pinned '+ name :"Unpinned " + name 
+                        : "An error occured!",
+                    addNotification,
+                    e.message
+                );
+                history.back();
+            });
+    }
 </script>
 
 <BodyWrapper>
@@ -63,6 +84,14 @@
         <div class=" font-semibold text-xl">
             Edit {$editItemDetailStore.name}
         </div>
+        <span
+            on:click={() => {
+               updatePin()
+            }}
+            class="bg-blue-500 border text-white px-3 py-1 rounded"
+        >
+        {$editItemDetailStore.pin==undefined||$editItemDetailStore.pin==false?'':'un'}pin Item
+        </span>
         <span
             class="border px-3 py-1 bg-red-500 text-white rounded"
             on:click={() => history.back()}

@@ -1,9 +1,9 @@
 <script>
     import { intros } from "svelte/internal";
-import { parse, stringify } from "uuid";
+    import { parse, stringify } from "uuid";
     import { getOrders_ByDate } from "../../firebase/functions/restaurant_funcs/restaurants";
     import { getDateToday, MoneyFormat } from "../../func_essential";
-    import { historyDataStore, userModelStore, userStore } from "../../stores";
+    import { businessModelStore, historyDataStore, userModelStore, userStore } from "../../stores";
     import BodyWrapper from "../bodyWrapper.svelte";
     import DetailTable from "./detailTable.svelte";
     import PluTable from "./pluTable.svelte";
@@ -19,7 +19,9 @@ import { parse, stringify } from "uuid";
             ? []
             : list;
     $: sort = $historyDataStore.forEach((e) => {
-        if (list.filter((val) => e.category == val.category).length == 0) {
+        if (
+            list.filter((val) => e.category == val.category).length == 0
+        ) {
             list = [
                 ...list,
                 {
@@ -65,10 +67,10 @@ import { parse, stringify } from "uuid";
         }
     });
     function conv_T(timeStamp) {
-        return { date:new Date.parse(Date(timeStamp).toString("d"))};
+        return { date: new Date.parse(Date(timeStamp).toString("d")) };
     }
     $: total = $historyDataStore.reduce((a, { total }) => a + total, 0);
-    let detailList = true;
+    $: detailList = true;
 </script>
 
 <BodyWrapper>
@@ -101,13 +103,11 @@ import { parse, stringify } from "uuid";
         <div>
             <span
                 on:click={async () => {
-                 if(to != undefined && to.length != 0){
-
-                     await getOrders_ByDate($userModelStore.uid, from, to)
-                 }else{
-                     alert("please fill in the to date!");
-                 }
-
+                    if (to != undefined && to.length != 0) {
+                        await getOrders_ByDate($businessModelStore.BusinessId, from, to);
+                    } else {
+                        alert("please fill in the to date!");
+                    }
                 }}
                 class="{to != undefined && to.length != 0
                     ? 'bg-gray-700 text-white border rounded shadow'
@@ -116,22 +116,40 @@ import { parse, stringify } from "uuid";
         </div>
     </div>
     <div class="flex justify-evenly py-3">
-        <span on:click={()=>{detailList=true}}
-             class=
-             "text-sm {detailList?'bg-slate-500 text-white border  px-4 py-2 rounded-md ':' border  px-4  py-2 rounded '} ">
+        <span
+            on:click={() => {
+                detailList = true;
+            }}
+            class="text-sm {detailList
+                ? 'bg-slate-500 text-white border  px-4 py-2 rounded-md '
+                : ' border  px-4  py-2 rounded '} "
+        >
             Summary PLU Table
         </span>
-            <span on:click={()=>{detailList=false}} class= "text-sm {!detailList?'bg-slate-500 text-white border  px-4 py-2 rounded-md ':' border  px-4  py-2 rounded '} ">
-           Detail PLU Table
+        <span
+            on:click={() => {
+                detailList = false;
+                list = [];
+            }}
+            class="text-sm {!detailList
+                ? 'bg-slate-500 text-white border  px-4 py-2 rounded-md '
+                : ' border  px-4  py-2 rounded '} "
+        >
+            Detail PLU Table
         </span>
-         <span class="hover:text-lg py-2 text-sm text-slate-700 underline text-md px-1 rounded">
+        <span
+            class="hover:text-lg py-2 text-sm text-slate-700 underline text-md px-1 rounded"
+        >
             Overall Total ugx.
             {MoneyFormat(total)}
         </span>
     </div>
     {#if detailList}
-    <PluTable bind:list/>
-{:else}
-    <DetailTable/>
+        <PluTable bind:list />
+    {:else}
+        <DetailTable />
+    {/if}
+    {#if list.length==0}
+        No Items to display
     {/if}
 </BodyWrapper>

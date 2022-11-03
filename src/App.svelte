@@ -1,6 +1,5 @@
 <script>
 	import { onMount } from "svelte";
-	import { checkAuth } from "./appscripts";
 	import OpeningScreen from "./Components/openingScreens/OpeningScreen.svelte";
 	import Sidebar from "./Components/sidebar/sidebar.svelte";
 	import Routes from "./routes.svelte";
@@ -10,21 +9,14 @@
 		userStore,
 		userModelStore,
 		pageNameStore,
-		activeOrderStore,
-		customerOrderHistory,
 		clearMemory,
-	} from "./stores";
+        fbMenuStore,
+        businessModelStore,
+	} from "./stores";		
 	import {
-		getAllMyOrders,
-		getCategories,
-		getOrders_ByDate,
-		getPending_Payments,
-	} from "./firebase/functions/restaurant_funcs/restaurants";
-	import {
-		customerOrder,
-		getfbCategories,
 		onLoadApp,
 	} from "./functions_convert";
+    import { stringify } from "uuid";
 	let y;
 	function screenSizeChange(y) {
 		screenSizeStore.update((e) => {
@@ -35,21 +27,20 @@
 		console.log(e);
 	}
 	onMount((e) => {
-		clearMemory();
 		if (
 			window.location.href.includes("customer_order") &&
 			$userModelStore.uid == null
-		) {
+			) {
+			clearMemory();
 			pageNameStore.update((e) => {
 				return { pageName: "makeOrder" };
 			});
 		}
 		if ($userStore == "authorized") {
-			onLoadApp($userModelStore.uid);
+			onLoadApp($businessModelStore.BusinessId);
 		}
 	});
 </script>
-
 <span class="hidden">
 	{screenSizeChange(y)}
 </span>

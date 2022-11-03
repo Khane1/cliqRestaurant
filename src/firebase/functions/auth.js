@@ -6,10 +6,10 @@ import { auth, updateUserModelstore, updateUserStore } from '../firebase.js'
 export function signIn(email,password) {
     signInWithEmailAndPassword(auth, email.trim(), password)
         .then(async function () {
-            await updateUserStore('authorized')
+            updateUserStore('authorized')
             console.log(auth.currentUser);
-            await onLoadApp(auth.currentUser.uid)
-            location.replace("/mymenu")
+           onLoadApp(auth.currentUser.uid)
+            location.replace("/home")
         }).catch((err) => {
             updateUserStore(err)
         })

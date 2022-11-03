@@ -13,6 +13,7 @@ export function notifyUser(text, addNotification, type) {
 export let pageNameStore = writable([]);
 export let userStore = persist(writable([]), createLocalStorage(), 'userStore')
 export let userModelStore = persist(writable([]), createLocalStorage(), 'currentUser')
+export let businessModelStore = persist(writable([]), createLocalStorage(), 'currentBusiness')
 export let categoryStore = persist(writable([]), createLocalStorage(), 'categoryStore')
 export let fbMenuStore = persist(writable([]), createLocalStorage(), 'fbMenuStore')
 export let customerOrderStore = writable([]);

@@ -5,7 +5,7 @@
 
 </script>
 
-<div class="m-5">
+<div class=" p-10">
     <div class="text-sm underline mb-2">
         Click to copy contact.
     </div>

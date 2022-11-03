@@ -3,7 +3,7 @@
        let textColor = "#ffffff"
 </script>
 
-<div class="m-5">
+<div class="p-10">
     <span class="font-bold">Qr  Brand Color Settings</span>
     <div class="flex justify-between my-2">
         <div>Qr Body Colors</div>

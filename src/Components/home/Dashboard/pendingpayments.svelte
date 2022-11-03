@@ -12,6 +12,7 @@
         pendingPaymentStore,
         userModelStore,
         activeOrderItemDetailStore,
+        businessModelStore,
     } from "../../../stores";
     import BodyWrapper from "../../bodyWrapper.svelte";
     let selectedId = "*";
@@ -157,14 +158,14 @@
                             }
                             customerIds.forEach((customerId) => {
                                 complete_Order(
-                                    $userModelStore.uid,
+                                    $businessModelStore.BusinessId,
                                     customerId,
                                     enumComplete.paid
                                 );
                                 selectedId = "*";
                             });
                             complete_OrderItems(
-                                $userModelStore.uid,
+                                $businessModelStore.BusinessId,
                                 itemDetails,
                                 enumComplete.paid
                             );

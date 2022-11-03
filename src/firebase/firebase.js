@@ -2,9 +2,10 @@ import { initializeApp, } from 'firebase/app';
 import { getAuth, } from 'firebase/auth'
 import { checkAuth } from '../appscripts';
 import { userModelStore, userStore } from '../stores';
-export let process;
-const firebaseConfig = 
- {
+// import functions from 'firebase/functions'
+// export let process;
+const firebaseConfig =
+{
     apiKey: "AIzaSyDdxUEeGpzUJok5ZeOrStn-8G88lXNRX-w",
     authDomain: "cliqrestaurants.firebaseapp.com",
     projectId: "cliqrestaurants",
@@ -47,7 +48,7 @@ export function updateUserStore(value) {
         return value
     })
 }
-export function updateUserModelstore(value){
+export function updateUserModelstore(value) {
     userModelStore.update((e) => {
         return value;
     })

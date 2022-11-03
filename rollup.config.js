@@ -6,12 +6,13 @@ import { terser } from 'rollup-plugin-terser';
 import css from 'rollup-plugin-css-only';
 import { config } from 'dotenv';
 import replace from '@rollup/plugin-replace';
+import dotenv from 'dotenv';
+dotenv.config();
 const configToReplace = {};
 for (const [key, v] of Object.entries(config().parsed)) {
   configToReplace[`process.env.${key}`] = `'${v}'`;
 }
 const production = !process.env.ROLLUP_WATCH;
-
 function serve() {
 	let server;
 
@@ -43,6 +44,7 @@ export default {
 	},
 	plugins: [
 		replace({
+			ApiKey:JSON.stringify(process.env.ApiKey),
 			include: ["src/**/*.ts", "src/**/*.svelte"],
 			preventAssignment: true,
 			values: configToReplace,

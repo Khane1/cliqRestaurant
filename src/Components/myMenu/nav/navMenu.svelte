@@ -9,6 +9,7 @@
         userStore,
         customerOrderHistory,
         historyDataStore,
+        myMenuPages,
     } from "../../../stores";
     import BodyWrapper from "../../bodyWrapper.svelte";
     import ItemImage from "../category/createItems/components/itemImage.svelte";
@@ -44,6 +45,7 @@
     let orderId = 1;
 
     function addToOrder(value) {
+        console.log(selectedCat_Name);
         const Index = order.findIndex((obj) => obj.val == value.name);
         if (order.filter((val) => value.name == val.val).length > 0) {
             order[Index].count = order[Index].count + 1;
@@ -89,13 +91,15 @@
             : order.reduce((a, { price, count }) => a + price * count, 0);
     onMount(() => {
         selectedId =
-            $userModelStore.uid != null && $userStore == "authorized"
+            $userModelStore.uid != null &&
+            $userStore == "authorized" &&
+            $categoryStore.value.length > 0
                 ? $categoryStore.value != undefined
                     ? $categoryStore.value[0].categoryId
                     : 0
                 : "welcome";
-        selectedSub = 
-            $categoryStore.value != undefined
+        selectedSub =
+            $categoryStore.value != undefined && $categoryStore.value.length > 0
                 ? $categoryStore.value[0].subMenu.length > 0
                     ? $categoryStore.value[0].subMenu[0].id
                     : "*"
@@ -108,14 +112,23 @@
         <div class="flex justify-center h-1/2">
             <RestaurantLandingPage bind:selectedId bind:selectedSub />
         </div>
-    {:else if selectedId == "welcome" && $userStore == "authorized"}
-        <div class="flex justify-center">
-            This is the menu your customer sees.
-        </div>
-        <div class="flex justify-center">
-            <RestaurantLandingPage bind:selectedId bind:selectedSub />
+    {:else if $userStore == "authorized" && $categoryStore.value.length == 0}
+        <div class="space-y-5">
+            <div class=" flex justify-center">No Menu Items Created!</div>
+            <div class="flex justify-center">
+                <span
+                    class="bg-slate-500 text-white rounded-full px-3 py-2"
+                    on:click={() =>
+                        myMenuPages.update((e) => {
+                            return { index: 2 };
+                        })}
+                >
+                    Add Inventory +
+                </span>
+            </div>
         </div>
     {/if}
+
     {#if $categoryStore.value != null && selectedId != "welcome"}
         {#if checkOutPage == false}
             <!-- ....................Make Order page......................... -->
@@ -137,7 +150,7 @@
                     : 'mt-8'} grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 justify-center"
             >
                 {#each $fbMenuStore.value as item}
-                    {#if (selectedId == item.categoryId && selectedSub == item.subItemId) || (selectedId == item.categoryId && selectedSub == "*")}
+                    {#if (selectedId == item.categoryId && selectedSub == item.subItemId) || (selectedId == item.categoryId && selectedSub == "*") || (selectedId == "pinned" && selectedSub == "pinned" && item.pin != undefined && item.pin != null && item.pin == true) || (selectedId == "pinned" && selectedSub == "pinned" && item.subItemId.includes(Math.floor(Math.random() * 10)))}
                         <ItemImage
                             bind:item
                             bind:order

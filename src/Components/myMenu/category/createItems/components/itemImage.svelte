@@ -58,7 +58,7 @@
             <span class="text-sm">Shs</span>
         </div>-->
         <span class="font-semibold text-md">
-                { item.name}
+            { item.name}
         </span>
         <div class="flex text-lg  text-red-500 font-semibold ">
             <h6 class="text-sm mt-1">ugx.</h6>

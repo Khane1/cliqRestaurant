@@ -8,9 +8,9 @@ export async function submitCategory(data) {
   return await createCategory(data)
   // return await checkIfConnected(data)
 }
-export async function submitSubMenu(data) {
+export async function submitSubMenu(data,b_id) {
   // changeToNextScreen(number)
-  return await createSubItems(data)
+  return await createSubItems(data,b_id)
   // return await checkIfConnected(data)
 }
 export async function submitItems(data) {

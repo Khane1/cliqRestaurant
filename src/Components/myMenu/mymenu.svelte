@@ -8,7 +8,7 @@
     } from "../../stores";
     import NavMyMenu from "../resuable/navs/nav_myMenu.svelte";
     import NavCreateCat from "./nav/navCreateCat.svelte";
-    import NavDiscounts from "./nav/navCreateQRCode.svelte";
+    import NavCreateQRCode from "./nav/navCreateQRCode.svelte";
     import NavMenu from "./nav/navMenu.svelte";
     onMount((e)=>{
         myMenuPages.update((e) => {
@@ -26,7 +26,7 @@
 {:else if $myMenuPages.index == 2}
     <NavCreateCat />
 {:else if $myMenuPages.index == 3}
-    <NavDiscounts />
+    <NavCreateQRCode />
 {/if}
 
 <style>

@@ -15,8 +15,6 @@ export async function getOrdersByDate(uid, db, from, to) {
             let x = [];
             val.docs.forEach((e) => {
                 x = [...x, e.data()]
-                console.log('+++__-');
-                console.log(JSON.stringify(x));
             })
             historyDataStore.update((e) => {
                 return x;

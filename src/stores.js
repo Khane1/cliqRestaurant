@@ -17,6 +17,8 @@ export let businessModelStore = persist(writable([]), createLocalStorage(), 'cur
 export let categoryStore = persist(writable([]), createLocalStorage(), 'categoryStore')
 export let fbMenuStore = persist(writable([]), createLocalStorage(), 'fbMenuStore')
 export let customerOrderStore = writable([]);
+export let emailStore = writable([]);
+export let collabBusinessId= persist(writable([]), createLocalStorage(), 'collabBusinessId')
 export let customerOrderHistory = persist(writable([]), createLocalStorage(), 'customerOrderHistory')
 export let customerOrderListStore = writable([]);
 export let activeOrderStore = writable([])
@@ -24,6 +26,8 @@ export let pendingPaymentStore = writable([])
 export let activeOrderItemDetailStore = writable([])
 export let historyDataStore = writable([])
 export let editItemDetailStore =  persist(writable([]), createLocalStorage(), 'editItemDetailStore')
+export let collabListStore =  persist(writable([]), createLocalStorage(), 'collabListStore')
+
 
 
 export let activeCompleteItemStore = writable([])

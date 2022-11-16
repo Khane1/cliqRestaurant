@@ -1,5 +1,5 @@
 import { checkIfConnected } from './appscripts';
-import { createCategory, createSubItems, createMenuItem, getCategories, getMenuItems, getCategoriesForOrder, updateMenuItem, getPending_Payments, getAllMyOrders, getOrders_ByDate } from './firebase/functions/restaurant_funcs/restaurants';
+import { createCategory, createSubItems, createMenuItem, getCategories, getMenuItems, getCategoriesForOrder, updateMenuItem, getPending_Payments, getAllMyOrders, getOrders_ByDate, businessSnapshot } from './firebase/functions/restaurant_funcs/restaurants';
 import { getDateToday } from './func_essential';
 import { categoryStore, createCategorySteps, fbMenuStore, } from './stores';
 
@@ -44,6 +44,7 @@ export async function onLoadApp(uid) {
     await getPending_Payments(uid);
     await getAllMyOrders(uid,[]);
     await historyOnAppStart(uid);
+    await businessSnapshot(uid);
   } catch (error) {
     console.log(error);
   }

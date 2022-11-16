@@ -47,7 +47,7 @@
             </div>
         </div>
 
-        <div class="bg-blue-100 rounded-md h-full w-full " in:fly>
+        <div class="border shadow rounded-md h-full w-full " in:fly>
             {#if page == 1}
             <AccountSettings />
             {:else if page == 2}

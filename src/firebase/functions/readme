@@ -36,3 +36,11 @@ Rules
  if (attendant(kitchen/waiter/waitress)) update pending order
  
 Every task assigned to attendants
+
+
+Code collaborator url: baseurl/uid/:authtoken
+
+    If you’re having trouble clicking the "Confirm email address" 
+    button, copy and paste the URL below into your web browser: 
+        https://rave-api-v3-2.tls-flutterwave.com/0a0d1ffffb887b6794a4795894a06bb729bc028e8?
+        token=FLW--9040e2c001ab756dd16ac1877f10b682-A8-1667324144067

@@ -12,7 +12,7 @@
     <span on:click={changePage}>Back</span>
     <div class="flex justify-center mt-5" />
     <CreateTemplate
-        title="Enter your Admin Name"
+        title="Enter your User Name"
         submitButtonTitle="Next"
         onSubmit={() => {
             createBusiness(businessName, name,$userModelStore.uid)

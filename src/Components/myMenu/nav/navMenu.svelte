@@ -10,6 +10,7 @@
         customerOrderHistory,
         historyDataStore,
         myMenuPages,
+        businessModelStore,
     } from "../../../stores";
     import BodyWrapper from "../../bodyWrapper.svelte";
     import ItemImage from "../category/createItems/components/itemImage.svelte";
@@ -93,8 +94,8 @@
         selectedId =
             $userModelStore.uid != null &&
             $userStore == "authorized" &&
-            $categoryStore.value.length > 0
-                ? $categoryStore.value != undefined
+            $categoryStore.value != undefined
+                ? $categoryStore.value.length > 0
                     ? $categoryStore.value[0].categoryId
                     : 0
                 : "welcome";
@@ -112,7 +113,7 @@
         <div class="flex justify-center h-1/2">
             <RestaurantLandingPage bind:selectedId bind:selectedSub />
         </div>
-    {:else if $userStore == "authorized" && $categoryStore.value.length == 0}
+    {:else if $userStore == "authorized" && $categoryStore.value != undefined && $categoryStore.value != null && $categoryStore.value.length == 0}
         <div class="space-y-5">
             <div class=" flex justify-center">No Menu Items Created!</div>
             <div class="flex justify-center">
@@ -186,8 +187,10 @@
 </BodyWrapper>
 
 <!-- ....................Floating Bottom Items......................... -->
-{#if !readyToEat}
-    <AToButton bind:order bind:checkOutPage bind:readyToEat bind:notes />
+{#if $businessModelStore.orderToggle == true}
+    {#if !readyToEat}
+        <AToButton bind:order bind:checkOutPage bind:readyToEat bind:notes />
+    {/if}
 {/if}
 {#if $screenSizeStore.size < 800 && selectedId != "welcome"}
     <!-- ....................Floating Top Items......................... -->
@@ -206,6 +209,7 @@
                     : $userModelStore.displayName}
             />
             <!-- Top Closing button -->
+            {#if $businessModelStore.orderToggle == true} 
             {#if checkOutPage}
                 <span
                     class="font-bold text-xl mr-10 border rounded-full px-3 py-1 bg-red-500 text-white"
@@ -231,6 +235,7 @@
                     />
                 </span>
             {/if}
+            {/if}
         </div>
         {#if $customerOrderListStore.table != undefined}
             <div class="text-lg font-semibold ">
@@ -244,7 +249,7 @@
                 bind:selectedSub
                 bind:selectOption
             />
-            <div class="flex  mt-0 mb-0 justify-center">
+            <div class="flex  mt-0 mb-0 justify-start">
                 <SubCategoryList bind:selectedId bind:selectedSub />
             </div>
         {:else}

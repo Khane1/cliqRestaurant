@@ -2,13 +2,16 @@ import {
     setDoc, doc, getFirestore, collection,
     getDocs, query, where, updateDoc, arrayUnion, getDoc, onSnapshot, limit
 } from 'Firebase/firestore';
-import { userModelStore, menuListStore, categoryStore, fbMenuStore, } from '../../../stores';
-import { app, auth } from '../../firebase.js'
-import { createNewBusiness } from './businessLogic';
+import { userModelStore, menuListStore, categoryStore, fbMenuStore, businessModelStore, } from '../../../stores';
+import { app, auth, updateUserStore } from '../../firebase.js'
+import { businessListener, createNewBusiness, roles, updateBusinessStore } from './businessLogic';
+import { createUser, streamUsersById, updateCollabRoleById, } from './collabLogic';
 import { uploadItemImage } from './ImageUpload';
 import { completeOrder, completeOrderItems, getMyOrders, getPendingPayments, OrderItemComplete } from './orders';
 import { v4 } from 'uuid'
 import { getOrdersByDate } from './historyData';
+import { updateProfile } from 'firebase/auth';
+import { customerOrderToggle } from './settingsLogic';
 export let db = getFirestore(app);
 const restaurantDoc = (userId) => doc(db, "restaurants", userId)
 const collaboratorDoc = (userId) => doc(db, "collaborators", userId)
@@ -36,9 +39,14 @@ export async function getPending_Payments(uid) {
 }
 export async function getCategoriesForOrder(name) {
     return await getDocs(query(collection(db, 'restaurants'), where("businessName", "==", name))).then((res) => {
-        console.log(res);
+        businessModelStore.update((e)=>{
+            return {orderToggle:res.docs[0].data().orderToggle,businessName:res.docs[0].data().businessName}
+        })
         return res.docs[0].data().BusinessId
     })
+}
+export async function orderTogglesettings(b_Id, toggle) {
+    return await customerOrderToggle(db, b_Id, toggle)
 }
 
 
@@ -52,6 +60,13 @@ export async function getCategories(uid) {
             return { value: list, uid: uid };
         });
     })
+}
+
+export async function businessSnapshot(b_Id) {
+    await businessListener(restaurantDoc(b_Id))
+}
+export async function collabListSnapshot(b_Id) {
+    streamUsersById(db, b_Id)
 }
 export async function getMenuItems(uid) {
     onSnapshot(query(collection(db, 'menuItems'), where("menuId", "==", uid), limit(100)), async (fb) => {
@@ -67,14 +82,41 @@ export async function getMenuItems(uid) {
 }
 ///////////////////////Business Signup/////////////////////////////////////////
 export async function createBusiness(businessName, userName, uid) {
-    return await createNewBusiness(auth, userName, businessName, restaurantDoc,collaboratorDoc(uid))
+    return await createNewBusiness(auth, restaurantDoc(businessId), userName, businessName, restaurantDoc, collaboratorDoc(uid))
 }
+///////////////////////collaborator Signup/////////////////////////////////////////
+export async function createCollaborator(businessId, userName, uid) {
+    await updateProfile(auth.currentUser, { displayName: userName, });
+    await createUser(auth, restaurantDoc(businessId), collaboratorDoc(uid), businessId, roles.unallocated)
 
+    await getDoc(doc(db, "restaurants", businessId)).then(async (business) => {
+        await updateBusinessStore(business.data())
+        await updateUserStore('authorized')
+    })
+
+    location.replace("/home")
+
+    // createNewBusiness(auth, userName, businessName, restaurantDoc,collaboratorDoc(uid))
+}
+export async function updateCollabRole(c_Id, role) {
+    await updateCollabRoleById(db, c_Id, role)
+}
+// getBusinessByCollaboratorIdQuery
+export async function getBusinessId(uid) {
+    try {
+        let user = (await getDoc(doc(db, "collaborators", uid))).data()
+        let business = (await getDoc(doc(db, 'restaurants', user.BusinessId))).data();
+        return { user: user, business: business }
+    } catch (error) {
+        console.log(error);
+    }
+
+}
 
 ///////////////////////Create_Categories/////////////////////////////////////////
 export async function createCategory(data) {
     try {
-        return await setDoc(doc(db, 'restaurants',data.menuId, 'menu', data.title), {
+        return await setDoc(doc(db, 'restaurants', data.menuId, 'menu', data.title), {
             // some additional inputs here...
             name: data.title,
             subMenu: data.submenu,
@@ -91,7 +133,7 @@ export async function createCategory(data) {
 }
 
 ///////////////////////Create_SubItems/////////////////////////////////////////
-export async function createSubItems(data,business_id) {
+export async function createSubItems(data, business_id) {
     try {
         console.log(data);
         if (data.submenu != null && data.submenu.length > 0) {
@@ -251,17 +293,43 @@ async function submitOrder(data, customerId, uid, orderTime) {
 
 
 ///////////////////////LoadUserData/////////////////////////////////////////
-export async function loadUser() {
-    let timer = setInterval(() => {
+export async function loadUser(user) {
+    let timer = setInterval(async () => {
+        console.log(auth.currentUser);
+        console.log(user);
         if (auth.currentUser != null) {
-            userModelStore.update((e) => {
-                return { displayName: auth.currentUser.displayName, email: auth.currentUser.email, uid: auth.currentUser.uid };
-            })
+            if (user.uid == null || user.uid == undefined) {
+                await getDoc(doc(db, 'collaborators', auth.currentUser.uid)).then(async (user) => {
+                    console.log(user.data());
+                    await userModelStore.update((e) => {
+                        return {
+                            displayName: auth.currentUser.displayName, email: auth.currentUser.email, uid: auth.currentUser.uid,
+                            BusinessId: user.BusinessId,
+                            role: user.role,//admin/cashier/manager/kitchen&waiter.waiteress...,  
+                            status: user.status,
+                        }
+                    })
+                })
+            }
+            else if (user.uid == auth.currentUser.uid) {
+                await userModelStore.update((e) => {
+                    return userTranslate(user, auth)
+                })
+            }
+
             clearInterval(timer)
         }
     }, 1000)
 
 }
+export var userTranslate = (user, auth) => (
+    {
+        displayName: auth.currentUser.displayName, email: auth.currentUser.email, uid: auth.currentUser.uid,
+        BusinessId: user.BusinessId,
+        role: user.role,//admin/cashier/manager/kitchen&waiter.waiteress...,  
+        status: user.status,
+    })
+
 
 
 // if no submenu then the category is the main category

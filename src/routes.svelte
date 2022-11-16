@@ -13,11 +13,24 @@
         pageNameStore,
         userStore,
         userModelStore,
+        collabBusinessId,
+        businessModelStore,
     } from "./stores";
     let page;
     import { v4 } from "uuid";
     import ErrorPage from "./Components/resuable/Error/errorPage.svelte";
     import EditItems from "./Components/myMenu/category/createItems/editItems.svelte";
+    import TeamCollab from "./Components/openingScreens/Team_collab.svelte";
+    import Collaborator from "./Components/home/business/collaborator.svelte";
+    import BodyWrapper from "./Components/bodyWrapper.svelte";
+    import { roles } from "./firebase/functions/restaurant_funcs/businessLogic";
+    import Logout from "./Components/settings/logout.svelte";
+
+    let p_NHold = (name) =>
+        pageNameStore.update((e) => {
+            return { pageName: name };
+        });
+
     let errorRouteScreen = () => {
         pageNameStore.update((e) => {
             return {
@@ -28,41 +41,58 @@
         return (page = ErrorPage);
     };
     router("/", () => {
-        if($userStore=='authorized'){
-            pageNameStore.update((e) => {
-            return { pageName: "home" };
-        });
-        return (page = Home);
-        }else{
-            pageNameStore.update((e) => {
-                return { pageName: "login" };
-            });
+        if ($userStore == "authorized") {
+            p_NHold("home");
+            return (page = Home);
+        } else {
+            p_NHold("login");
             return (page = OpeningScreen);
         }
     });
-    router("/signUp", () => {
-        pageNameStore.update((e) => {
-            return { pageName: "login" };
+    router("/teamcollab/:id/signup", (e) => {
+        let id = e.params.id;
+        collabBusinessId.update((e) => {
+            return { businessId: id };
         });
-        return (page = Business);
+        console.log("-_-");
+        if ($userStore != "authorized" && $userModelStore.uid == null) {
+            p_NHold("collab");
+            return (page = TeamCollab);
+        } else errorRouteScreen();
+    });
+    router("/myteam", (e) => {
+        if ($userStore == "authorized" && $userModelStore.uid != null) {
+            p_NHold("myTeam");
+            return (page = Collaborator);
+        } else errorRouteScreen();
+    });
+    router("/signUp", () => {
+        if ($userStore == "authorized") {
+            p_NHold("home");
+            return (page = Home);
+        } else if ($userStore == "authorizing") {
+            p_NHold("login");
+            alert("mdd");
+            return (page = Business);
+        } else errorRouteScreen();
     });
     router("/settings", () => {
-        pageNameStore.update((e) => {
-            return { pageName: "settings" };
-        });
-        return (page = Settings);
+        if ($userStore == "authorized") {
+            p_NHold("settings");
+            return (page = Settings);
+        } else errorRouteScreen();
     });
     router("/home", () => {
-        pageNameStore.update((e) => {
-            return { pageName: "home" };
-        });
-        return (page = Home);
+        if ($userStore == "authorized") {
+            p_NHold("home");
+            return (page = Home);
+        } else errorRouteScreen();
     });
     router("/mymenu", () => {
-        pageNameStore.update((e) => {
-            return { pageName: "myMenu" };
-        });
-        return (page = Mymenu);
+        if ($userStore == "authorized") {
+            p_NHold("myMenu");
+            return (page = Mymenu);
+        } else errorRouteScreen();
     });
     router("/customer_order/:restaurant/:table", (e) => {
         let restaurantName = e.params.restaurant;
@@ -84,26 +114,48 @@
         } else errorRouteScreen();
     });
     router("/history", (e) => {
-        if (
-            $userModelStore.uid != null 
-        ) {
-            pageNameStore.update((e) => {
-                return { pageName: "history" };
-            });
+        if ($userModelStore.uid != null) {
+            p_NHold("history");
             return (page = History);
         } else errorRouteScreen();
     });
     router("/editItem", (e) => {
-        if (
-            $userModelStore.uid != null)
-        {
-            pageNameStore.update((e) => {
-                return { pageName: "editItem" };
-            });
+        if ($userModelStore.uid != null) {
+            p_NHold("editItem");
             return (page = EditItems);
         } else errorRouteScreen();
     });
     router.start();
+    $: pagePermissions = (pgName) =>
+        $pageNameStore.pageName == pgName &&
+        $userModelStore.role != roles.admin &&
+        $pageNameStore.pageName == pgName &&
+        $userModelStore.role != roles.manager;
 </script>
 
-<svelte:component this={page} />
+{#if $userModelStore.role == roles.unallocated && !$businessModelStore.adminIds.includes($userModelStore.uid)}
+    <BodyWrapper>
+        <div>
+            <div class="text-xl flex justify-center text-slate-500">
+                Awaiting your role Assignment
+            </div>
+            <div class="flex justify-center">
+                Current Role- {$userModelStore.role}
+            </div>
+        </div>
+        <Logout message={"___"} />
+    </BodyWrapper>
+{:else if pagePermissions("history") || pagePermissions("myTeam")}
+    <BodyWrapper>
+        <div>
+            <div class="text-xl flex justify-center text-slate-500">
+                Only Admins and Managers are able to view this page
+            </div>
+            <div class="flex justify-center">
+                Current Role- {$userModelStore.role}
+            </div>
+        </div>
+    </BodyWrapper>
+{:else}
+    <svelte:component this={page} />
+{/if}

@@ -10,13 +10,12 @@
 		userModelStore,
 		pageNameStore,
 		clearMemory,
-        fbMenuStore,
-        businessModelStore,
-	} from "./stores";		
-	import {
-		onLoadApp,
-	} from "./functions_convert";
-    import { stringify } from "uuid";
+		fbMenuStore,
+		businessModelStore,
+        collabListStore,
+	} from "./stores";
+	import { onLoadApp } from "./functions_convert";
+    import { collabListSnapshot } from "./firebase/functions/restaurant_funcs/restaurants";
 	let y;
 	function screenSizeChange(y) {
 		screenSizeStore.update((e) => {
@@ -26,18 +25,29 @@
 	function handleThis(e) {
 		console.log(e);
 	}
+	$: $collabListStore.forEach((e) => {
+        if (e.uid == $userModelStore.uid && e.role != $userModelStore.role) {
+            let user = $userModelStore;
+            user.role = e.role;
+            userModelStore.update((e) => {
+                return user;
+            });
+        }
+    });
 	onMount((e) => {
 		if (
 			window.location.href.includes("customer_order") &&
 			$userModelStore.uid == null
-			) {
+		) {
 			clearMemory();
 			pageNameStore.update((e) => {
 				return { pageName: "makeOrder" };
 			});
 		}
 		if ($userStore == "authorized") {
+			collabListSnapshot($businessModelStore.BusinessId);
 			onLoadApp($businessModelStore.BusinessId);
+			
 		}
 	});
 </script>
@@ -48,17 +58,13 @@
 <Notifications>
 	<main class="flex md:space-x-30 md:space-x-80 ">
 		{#if y > 640}
-			<div class="sm:hidden  md:block ">
-				<Sidebar />
+		<div class="sm:hidden  md:block ">
+			<Sidebar />
 			</div>
 		{/if}
 		<body>
 			<div class=" px-5 py-0">
-				{#if $userStore == "authorized" || $userStore == "authorizing" || $pageNameStore.pageName == "makeOrder"}
 					<Routes />
-				{:else}
-					<OpeningScreen />
-				{/if}
 			</div>
 		</body>
 	</main>

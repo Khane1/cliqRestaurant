@@ -30,33 +30,28 @@
         }
       });
     }
-    // var audio=new Audio('/not.wav');
-    // if (audio != undefined) {
-    //   audio.play();
+  });
+ onMount((e)=>{
 
-    //   console.log(value);
-    //   console.log('playing');
-    //   // alert(JSON.stringify(audio));
-    // }
-  });
-  onMount(async (e) => {
-    loadUser();
-  });
+  //  loadUser($userModelStore)
+ })
   onDestroy(unsubscribe);
 </script>
 
 <aside class="w-80 fixed left-0 top-0 h-screen p-5">
-    {#if $userStore == "authorized" && $userStore != undefined && $userStore != null}
+  {#if $userStore == "authorized" && $userStore != undefined && $userStore != null}
     <h1 class="text-white text-2xl font-extrabold">
       {$businessModelStore.businessName == undefined
         ? "Loading..."
         : $businessModelStore.businessName}
     </h1>
     <h1 class="text-slate-300 text-lg font-extrabold">CLIQ MINI SERVICE</h1>
+    <h1 class="text-slate-300">{$userModelStore.displayName}</h1>
   {/if}
-  <div class="mt-36">
+  <div class="mt-20">
     {#if $userStore == "authorized" && $userStore != "" && $userStore != undefined && $userStore != null}
       <ul class="relative align-middle">
+        {#if $businessModelStore.orderToggle==true}
         <li class="relative">
           <a
             class="{$pageNameStore.pageName == 'home'
@@ -67,6 +62,7 @@
             data-mdb-ripple-color="dark"
           >
             {#if $activeOrderStore.length > 0}
+
               <span>
                 Active Orders <span
                   class="bg-white font-bold ml-3 px-2.5 py-0.5 text-slate-600 text-sm rounded-full"
@@ -79,6 +75,7 @@
             {/if}
           </a>
         </li>
+        {/if}
         <li class="relative">
           <a
             class=" {$pageNameStore.pageName == 'myMenu'
@@ -88,6 +85,20 @@
             data-mdb-ripple="true"
             data-mdb-ripple-color="dark"
             ><span> My menu </span>
+          </a>
+        </li>
+        <li class="relative">
+          <a
+            on:click={() => {
+              // signOut();
+            }}
+            class=" {$pageNameStore.pageName == 'myTeam'
+              ? 'isActive'
+              : ''} flex items-center justify-center text-white text-ellipsis transition duration-300 ease-in-out"
+            href="/myTeam"
+            data-mdb-ripple="true"
+            data-mdb-ripple-color="dark"
+            ><span> Team </span>
           </a>
         </li>
         <li class="relative">
@@ -116,6 +127,7 @@
             ><span> Settings </span>
           </a>
         </li>
+       
       </ul>
     {:else if $userStore != "authorized"}
       <h1 class="cliqHeader text-white text-2xl font-extrabold">

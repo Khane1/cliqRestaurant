@@ -2,17 +2,11 @@ import { initializeApp, } from 'firebase/app';
 import { getAuth, } from 'firebase/auth'
 import { checkAuth } from '../appscripts';
 import { userModelStore, userStore } from '../stores';
-// import functions from 'firebase/functions'
-// export let process;
-const firebaseConfig =
-{
-    apiKey: "AIzaSyDdxUEeGpzUJok5ZeOrStn-8G88lXNRX-w",
-    authDomain: "cliqrestaurants.firebaseapp.com",
-    projectId: "cliqrestaurants",
-    storageBucket: "cliqrestaurants.appspot.com",
-    messagingSenderId: "385062950946",
-    appId: "1:385062950946:web:dfed13026decb68670d27b",
-    measurementId: "G-TF066078JV"
+
+export let process;
+const firebaseConfig = 
+ {
+   
 };
 
 export const app = initializeApp(firebaseConfig);

@@ -3,6 +3,7 @@
         userModelStore,
         activeOrderStore,
         activeOrderItemDetailStore,
+        businessModelStore,
     } from "../../../stores";
     import { onMount } from "svelte";
     import BodyWrapper from "../../bodyWrapper.svelte";
@@ -17,6 +18,9 @@
     let list = [];
     let itemDetails = [];
     let table = [];
+    $:table=
+    $activeOrderStore.length!=undefined&& table.length!=undefined&&
+    $activeOrderStore.length!=table.length?[]:table;
     $: getTables = $activeOrderStore.forEach((e) => {
         if (!table.includes(e.data().table)) {
             table = [...table, e.data().table];
@@ -26,18 +30,6 @@
     });
     let business;
     onMount(async (e) => {
-        getAllMyOrders(
-            $userModelStore.uid,
-            $activeOrderStore != undefined &&
-                $activeOrderStore.order != undefined
-                ? $activeOrderStore.order
-                : []
-        );
-
-        console.log($activeOrderStore.order);
-        activeOrderStore.update((e) => {
-            return [];
-        });
     });
     $: x = $activeOrderItemDetailStore.forEach((e) => {
         //after getting individual Items
@@ -175,7 +167,7 @@
                         on:click={() => {
                             itemDetails.forEach((e) => {
                                 complete_Order(
-                                    $userModelStore.uid,
+                                    $businessModelStore.BusinessId,
                                     e.customerId,
                                     enumComplete.pending
                                 ),

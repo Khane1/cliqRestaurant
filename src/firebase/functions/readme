@@ -1,0 +1,46 @@
+UserRoles.
+
+Collaborators/Users obj
+{ uid:....,
+  BusinessId:....,
+  contacts:[email,phoneNumber....],
+  role:admin/cashier/manager/kitchen&waiter.waiteress...,  
+  lastLoggedIn:timestamp,
+  status:active/inactive/blocked
+  }
+
+Business obj
+{ BusinessId:....,
+  adminIds:[...]
+  collaboratorId:....,
+  location:...., 
+  contacts:[....]
+}
+Collaborate feature ref flutterwave
+
+1. Admin adds individual's email
+2. we send an email to individual
+3. Admin declares roles
+4. Individual signs up using link
+5. We give user access to account data under collaborators
+
+1. create a user
+2. create a business account
+3. Make user an admin in business
+
+
+Rules
+ if (admin) >do all actions even assign roles
+ if (manager) do all assign roles
+ if (cashier) update payments
+ if (attendant(kitchen/waiter/waitress)) update pending order
+ 
+Every task assigned to attendants
+
+
+Code collaborator url: baseurl/uid/:authtoken
+
+    If you’re having trouble clicking the "Confirm email address" 
+    button, copy and paste the URL below into your web browser: 
+        https://rave-api-v3-2.tls-flutterwave.com/0a0d1ffffb887b6794a4795894a06bb729bc028e8?
+        token=FLW--9040e2c001ab756dd16ac1877f10b682-A8-1667324144067

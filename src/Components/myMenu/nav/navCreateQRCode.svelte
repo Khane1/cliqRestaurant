@@ -1,6 +1,7 @@
 <script>
     import { onMount } from "svelte";
-    import { downloadQrTableStore, userModelStore } from "../../../stores";
+    import { downloadQrTableStore, businessModelStore } from "../../../stores";
+    import { jsPDF } from "jspdf";
 
     import BodyWrapper from "../../bodyWrapper.svelte";
     import Header from "../../resuable/header.svelte";
@@ -49,31 +50,60 @@
             return { table: i };
         });
     }
+    // window.jsPDF = window.jspdf.jsPDF;
     function singleScreenShot(filename) {
         // your code to be executed after 1 second
-        html2canvas(document.getElementById("qrBoxID"), {
-            allowTaint: true,
-            useCORS: true,
-        })
-            .then(function (canvas) {
-                // It will return a canvas element
-                let image = canvas.toDataURL("image/png", 10);
-                url = image;
-                const createEl = document.createElement("a");
-                createEl.href = url;
+        // html2canvas(document.getElementById("qrBoxID"), {
+        //     allowTaint: true,
+        //     useCORS: true,
+        // })
+        //     .then(function (canvas) {
+        //         // It will return a canvas element
+        //         let image = canvas.toDataURL("image/png", 10);
+        //         url = image;
+        //         const createEl = document.createElement("a");
+        //         createEl.href = url;
 
-                // This is the name of our downloaded file
-                createEl.download = "theAlef Table " + filename;
-                createEl.click();
-                // window.location.href = image;
-            })
-            .catch((e) => {
-                // Handle errors
-                // console.log(e);
-                alert(e);
-            });
+        //         // This is the name of our downloaded file
+        //         createEl.download = $businessModelStore.businessName+" Table " + filename;
+        //         createEl.click();
+        //         // window.location.href = image;
+        //     })
+        //     .catch((e) => {
+        //         // Handle errors
+        //         // console.log(e);
+        //         alert(e);
+        //     });
+        downloadPDFPage(filename);
     }
 
+    function downloadPDFPage(filename) {
+        var doc = new jsPDF();
+
+        // Source HTMLElement or a string containing HTML.
+        var elementHTML = document.getElementById("qrBoxID");
+
+        doc.html(elementHTML, {
+            callback: function (doc) {
+                // Save the PDF
+                doc.save(
+                    $businessModelStore.businessName +
+                        " Table " +
+                        filename +
+                        ".pdf"
+                );
+            },
+            margin: [10,10,10,10],
+            autoPaging: "text",
+            x: 0,
+            y: 0,
+            width: 200, //target width in the PDF document
+            // height:150,
+            windowWidth: 675, //window width in CSS pixels
+            // windowWidth: 190, //window width in CSS pixels
+        
+        });
+    }
     onMount((e) => {
         updateTableNumber(1);
     });
@@ -144,8 +174,8 @@
                                 >Select qr Title</option
                             >
                         {/if}
-                        <option value="#{$userModelStore.displayName}"
-                            >{$userModelStore.displayName}</option
+                        <option value="#{$businessModelStore.businessName}"
+                            >{$businessModelStore.businessName}</option
                         >
                         <option value="#Order Here">Order Here</option>
                         <option value="#Scan To see menu"
@@ -165,47 +195,50 @@
                         <input type="color" bind:value={textColor} />
                     </div>
                     <div class="flex justify-end mb-1 ">
-                        <span on:click={()=>resetColors()} class='border px-3 bg-blue-600 text-white'>Reset</span>
-                        
+                        <span
+                            on:click={() => resetColors()}
+                            class="border px-3 bg-blue-600 text-white"
+                            >Reset</span
+                        >
                     </div>
                 </div>
-                <div
-                    style="background-color:{color}"
-                    id="qrBoxID"
-                    class="qrBox px-10"
-                >
-                    <span
-                        style="color:{textColor}"
-                        class="qrTitle flex justify-center font-bold text-white text-3xl"
-                        >THE ALEF</span
-                    >
-                    <div class="p-4 bg-white">
-                        <GenerateQr
-                            codeValue="/customer_order/{$userModelStore.displayName}/{downloadOption ==
-                            'multiple'
-                                ? $downloadQrTableStore.table
-                                : value}"
-                            squareSize="200"
-                        />
-                    </div>
+                <div id="qrBoxID">
+                    <div style="background-color:{color}" class="qrBox px-10">
+                        <span
+                            style="color:{textColor}"
+                            class="qrTitle flex justify-center font-bold text-white text-3xl"
+                            >{$businessModelStore.businessName}</span
+                        >
+                        <div class="p-4 bg-white">
+                            <GenerateQr
+                                codeValue="{window.location
+                                    .origin}/customer_order/{$businessModelStore.businessName}/{downloadOption ==
+                                'multiple'
+                                    ? $downloadQrTableStore.table
+                                    : value}"
+                                squareSize="200"
+                            />
+                        </div>
 
-                    <span
-                        style="color:{textColor}"
-                        class=" flex justify-center pt-4  font-bold"
-                        >Table {downloading == false
-                            ? value
-                            : $downloadQrTableStore.table}</span
-                    >
-                    <span
-                        class=" flex justify-center text-sm font-bold text-orange-200"
-                        >{assignedValue}</span
-                    >
-                    <span
-                        style="color:{textColor}"
-                        class=" flex justify-center text-sm"
-                        >Product of Cliq</span
-                    >
+                        <span
+                            style="color:{textColor}"
+                            class=" flex justify-center pt-4  font-bold"
+                            >Table {downloading == false
+                                ? value
+                                : $downloadQrTableStore.table}</span
+                        >
+                        <span
+                            class=" flex justify-center text-sm font-bold text-orange-200"
+                            >{assignedValue}</span
+                        >
+                        <span
+                            style="color:{textColor}"
+                            class=" flex justify-center text-sm"
+                            >Product of Cliq</span
+                        >
+                    </div>
                 </div>
+
                 <div class={downloading ? "flex justify-center" : "hidden"}>
                     Downloading {$downloadQrTableStore.table}
                 </div>

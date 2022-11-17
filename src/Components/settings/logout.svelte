@@ -1,11 +1,12 @@
 <script>
     import { signOut } from "../../firebase/functions/auth";
+    export let message='';
 </script>
 
 <div class="space-y-5">
     <div class=" mt-10 flex justify-center text-lg font-semibold">Log out</div>
     <div class=" flex justify-center">
-        <span class="flex items-center "> Are you sure? </span>
+        <span class="flex items-center ">{message.length==0? "Are you sure":message} </span>
     </div>
     <div class="space-y-10 flex justify-center">
         <span

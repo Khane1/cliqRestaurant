@@ -1,29 +1,57 @@
 <script>
-import { onMount } from "svelte";
-    import { stringify } from "uuid";
+  import { onMount, onDestroy } from "svelte";
+  import { stringify } from "uuid";
+  import { loadUser } from "../../firebase/functions/restaurant_funcs/restaurants";
 
-import { loadUser } from "../../firebase/functions/restaurant_funcs/restaurants";
-
-  import { pageNameStore, userStore, userModelStore,activeOrderStore} from "../../stores";
+  import {
+    pageNameStore,
+    userStore,
+    userModelStore,
+    activeOrderStore,
+    businessModelStore,
+  } from "../../stores";
 
   function onclick() {
     let sidebar = document.getElementsByClassName("sidebar");
     console.log(sidebar);
     //    sidebar.sidebar('toggle')
   }
-  onMount(async (e)=>{
-  loadUser();  
-  })
+  // let audio;
+  $: length;
+  let unsubscribe = activeOrderStore.subscribe(async (value) => {
+    if ($userStore == "authorized") {
+      Notification.requestPermission((perm) => {
+        if (perm == "granted" && $activeOrderStore.length > 0) {
+          new Notification("New Order", {
+            body: "Open active order page",
+            icon: "favicon.png",
+            silent: true,
+          });
+        }
+      });
+    }
+  });
+ onMount((e)=>{
+
+  //  loadUser($userModelStore)
+ })
+  onDestroy(unsubscribe);
 </script>
 
 <aside class="w-80 fixed left-0 top-0 h-screen p-5">
   {#if $userStore == "authorized" && $userStore != undefined && $userStore != null}
-    <h1 class="text-white text-2xl font-extrabold">{$userModelStore.displayName==undefined?'Loading...':$userModelStore.displayName}</h1>
+    <h1 class="text-white text-2xl font-extrabold">
+      {$businessModelStore.businessName == undefined
+        ? "Loading..."
+        : $businessModelStore.businessName}
+    </h1>
     <h1 class="text-slate-300 text-lg font-extrabold">CLIQ MINI SERVICE</h1>
+    <h1 class="text-slate-300">{$userModelStore.displayName}</h1>
   {/if}
-  <div class="mt-36">
+  <div class="mt-20">
     {#if $userStore == "authorized" && $userStore != "" && $userStore != undefined && $userStore != null}
       <ul class="relative align-middle">
+        {#if $businessModelStore.orderToggle==true}
         <li class="relative">
           <a
             class="{$pageNameStore.pageName == 'home'
@@ -33,15 +61,21 @@ import { loadUser } from "../../firebase/functions/restaurant_funcs/restaurants"
             data-mdb-ripple="true"
             data-mdb-ripple-color="dark"
           >
-          {#if $activeOrderStore.length>0}
-          <span> Active Orders <span  class="bg-white font-bold ml-3 px-2.5 py-0.5 text-slate-600 text-sm rounded-full">
-            { $activeOrderStore.length}
-          </span> </span>
-           {:else}
-            <span> Active Orders </span>
+            {#if $activeOrderStore.length > 0}
+
+              <span>
+                Active Orders <span
+                  class="bg-white font-bold ml-3 px-2.5 py-0.5 text-slate-600 text-sm rounded-full"
+                >
+                  {$activeOrderStore.length}
+                </span>
+              </span>
+            {:else}
+              <span> Active Orders </span>
             {/if}
           </a>
         </li>
+        {/if}
         <li class="relative">
           <a
             class=" {$pageNameStore.pageName == 'myMenu'
@@ -53,34 +87,48 @@ import { loadUser } from "../../firebase/functions/restaurant_funcs/restaurants"
             ><span> My menu </span>
           </a>
         </li>
-        <!-- <li class="relative">
+        <li class="relative">
+          <a
+            on:click={() => {
+              // signOut();
+            }}
+            class=" {$pageNameStore.pageName == 'myTeam'
+              ? 'isActive'
+              : ''} flex items-center justify-center text-white text-ellipsis transition duration-300 ease-in-out"
+            href="/myTeam"
+            data-mdb-ripple="true"
+            data-mdb-ripple-color="dark"
+            ><span> Team </span>
+          </a>
+        </li>
+        <li class="relative">
           <a
             class=" {$pageNameStore.pageName == 'history'
               ? 'isActive'
               : ''} flex items-center justify-center text-white text-ellipsis transition duration-300 ease-in-out"
-            href="/theAlef/123/history"
+            href="/history"
             data-mdb-ripple="true"
             data-mdb-ripple-color="dark"
             ><span> History </span>
           </a>
-        </li> -->
-        
+        </li>
+
         <li class="relative">
           <a
             on:click={() => {
               // signOut();
             }}
             class=" {$pageNameStore.pageName == 'settings'
-            ? 'isActive'
-            : ''} flex items-center justify-center text-white text-ellipsis transition duration-300 ease-in-out"
+              ? 'isActive'
+              : ''} flex items-center justify-center text-white text-ellipsis transition duration-300 ease-in-out"
             href="/settings"
             data-mdb-ripple="true"
             data-mdb-ripple-color="dark"
             ><span> Settings </span>
           </a>
         </li>
+       
       </ul>
- 
     {:else if $userStore != "authorized"}
       <h1 class="cliqHeader text-white text-2xl font-extrabold">
         CLIQ MINI SERVICE
@@ -89,10 +137,15 @@ import { loadUser } from "../../firebase/functions/restaurant_funcs/restaurants"
   </div>
 </aside>
 
+<!-- <audio
+  src="https://freesound.org/data/previews/536/536420_4921277-lq.mp3"
+  bind:this={audio}
+/> -->
 <style>
   li a {
     border-radius: 10px;
     background-color: #6237e6;
+    /* background-color:#243fd697; */
     margin-bottom: 35px;
     text-align: center;
     padding-top: 15px;
@@ -104,7 +157,7 @@ import { loadUser } from "../../firebase/functions/restaurant_funcs/restaurants"
   }
   li a:hover {
     /* background-color: #FF5B72; */
-    background-color:#2cf8476a;
+    background-color: #2cf84786;
     color: rgb(255, 255, 255);
     font-weight: 600;
   }
@@ -118,6 +171,7 @@ import { loadUser } from "../../firebase/functions/restaurant_funcs/restaurants"
     padding: 25px;
     padding-top: 40px;
     background-color: #725bff;
+    /* background-color: #000d6e; */
     font-family: "Poppins", sans-serif;
   }
 </style>

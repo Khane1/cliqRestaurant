@@ -24,6 +24,7 @@
     "axios": "^0.27.2",
     "dotenv": "^16.0.2",
     "firebase": "^9.9.3",
+    "jspdf": "^2.5.1",
     "page": "^1.11.6",
     "sirv-cli": "^2.0.0",
     "svelte-notifications": "^0.9.97",

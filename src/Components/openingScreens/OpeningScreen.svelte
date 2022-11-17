@@ -7,13 +7,12 @@ import { userStore } from "../../stores";
     import SignIn from "./signIn.svelte";
     import SignUp from "./SignUp.svelte";
     let page = "signIn";
-    let email =''
-    let password=''
+    let email ='xmp@yahoo.com'
+    let password='12345678'
     function onPageChange(newPage) {
         page = newPage;
     }
 </script>
-{$userStore}
 <BodyWrapper>
     <div class="flex justify-center">
         <div class="mt-20 pl-10">

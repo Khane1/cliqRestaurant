@@ -2,7 +2,12 @@
     import Modal from "svelte-simple-modal";
     import { fly } from "svelte/transition";
     import { MoneyFormat } from "../../../../../func_essential";
-    import { editItemDetailStore, screenSizeStore, userStore } from "../../../../../stores";
+    import {
+        businessModelStore,
+        editItemDetailStore,
+        screenSizeStore,
+        userStore,
+    } from "../../../../../stores";
     import MenuPopup from "../../../viewMenu/popUpdetails/menu_Popup.svelte";
     import AdminEditButton from "./itemImageComps/adminEditButton.svelte";
     import OrderActionButton from "./itemImageComps/order_actionButton.svelte";
@@ -33,24 +38,32 @@
         </MenuPopup>
     </Modal>
     {#if $userStore == "authorized"}
-        <AdminEditButton bind:showOption onclick={() => {
-            editItemDetailStore.update((e)=>item)
-        }} />
-    {:else if showOption == false }
-        <OrderActionButton
-            bind:order
-            bind:item
+        <AdminEditButton
             bind:showOption
-            onclick={() => onclick()}
+            onclick={() => {
+                editItemDetailStore.update((e) => item);
+            }}
         />
-    {:else}
-        <PlusMinusItems
-            reduce={() => reduce()}
-            bind:order
-            bind:item
-            onclick={() => onclick()}
-        />
-    {/if}
+        {/if}
+        {#if $userStore != "authorized"}
+        {#if $businessModelStore.orderToggle==false}
+            <div />
+        {:else if showOption == false}
+            <OrderActionButton
+                bind:order
+                bind:item
+                bind:showOption
+                onclick={() => onclick()}
+            />
+        {:else}
+            <PlusMinusItems
+                reduce={() => reduce()}
+                bind:order
+                bind:item
+                onclick={() => onclick()}
+            />
+        {/if}
+        {/if}
 
     <div class="py-2">
         <!-- <div class=" text-black text-sm font-bold ">
@@ -58,7 +71,7 @@
             <span class="text-sm">Shs</span>
         </div>-->
         <span class="font-semibold text-md">
-                { item.name}
+            {item.name}
         </span>
         <div class="flex text-lg  text-red-500 font-semibold ">
             <h6 class="text-sm mt-1">ugx.</h6>

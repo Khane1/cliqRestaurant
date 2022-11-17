@@ -1,6 +1,5 @@
 <script>
 	import { onMount } from "svelte";
-	import { checkAuth } from "./appscripts";
 	import OpeningScreen from "./Components/openingScreens/OpeningScreen.svelte";
 	import Sidebar from "./Components/sidebar/sidebar.svelte";
 	import Routes from "./routes.svelte";
@@ -10,16 +9,13 @@
 		userStore,
 		userModelStore,
 		pageNameStore,
-		activeOrderStore,
-		customerOrderHistory,
-        clearMemory,
+		clearMemory,
+		fbMenuStore,
+		businessModelStore,
+        collabListStore,
 	} from "./stores";
-	import {
-		getAllMyOrders,
-		getCategories,
-        getPending_Payments,
-	} from "./firebase/functions/restaurant_funcs/restaurants";
-	import { customerOrder, getfbCategories, onLoadApp } from "./functions_convert";
+	import { onLoadApp } from "./functions_convert";
+    import { collabListSnapshot } from "./firebase/functions/restaurant_funcs/restaurants";
 	let y;
 	function screenSizeChange(y) {
 		screenSizeStore.update((e) => {
@@ -29,29 +25,32 @@
 	function handleThis(e) {
 		console.log(e);
 	}
+	$: $collabListStore.forEach((e) => {
+        if (e.uid == $userModelStore.uid && e.role != $userModelStore.role) {
+            let user = $userModelStore;
+            user.role = e.role;
+            userModelStore.update((e) => {
+                return user;
+            });
+        }
+    });
 	onMount((e) => {
-		clearMemory();
-		console.log(window.location.href.includes("customer_order"));
-		if (window.location.href.includes("customer_order")&& $userModelStore.uid==null) {
+		if (
+			window.location.href.includes("customer_order") &&
+			$userModelStore.uid == null
+		) {
+			clearMemory();
 			pageNameStore.update((e) => {
 				return { pageName: "makeOrder" };
 			});
 		}
 		if ($userStore == "authorized") {
-			// getfbCategories($userModelStore.uid);
-			// getPending_Payments($userModelStore.uid);
-			// getAllMyOrders(
-			// 	$userModelStore.uid,
-			// 	$activeOrderStore != undefined &&
-			// 		$activeOrderStore.order != undefined
-			// 		? $activeOrderStore.order
-			// 		: []
-			// );
-			onLoadApp($userModelStore.uid)
+			collabListSnapshot($businessModelStore.BusinessId);
+			onLoadApp($businessModelStore.BusinessId);
+			
 		}
 	});
 </script>
-
 <span class="hidden">
 	{screenSizeChange(y)}
 </span>
@@ -59,17 +58,13 @@
 <Notifications>
 	<main class="flex md:space-x-30 md:space-x-80 ">
 		{#if y > 640}
-			<div class="sm:hidden  md:block ">
-				<Sidebar />
+		<div class="sm:hidden  md:block ">
+			<Sidebar />
 			</div>
 		{/if}
 		<body>
 			<div class=" px-5 py-0">
-				{#if $userStore == "authorized" || $userStore == "authorizing" || $pageNameStore.pageName == "makeOrder"}
 					<Routes />
-				{:else}
-					<OpeningScreen />
-				{/if}
 			</div>
 		</body>
 	</main>

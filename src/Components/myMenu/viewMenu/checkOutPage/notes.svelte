@@ -39,26 +39,26 @@
             </div>
             
             <div class="mt-2">
-                <span class="border px-2 py-1 mr-4" on:click={()=>{value="Take away "+value}}>Take away</span>
-                <span class="border px-2 py-1 mr-4" on:click={()=>{value="No sugar "+value}}>No sugar</span>
-                <span class="border px-2 py-1 mr-4" on:click={()=>{value="No salt "+value}}>No salt</span>
+                <span class="border px-2 py-1 mr-4" on:click={()=>{value+=" Take away "}}>Take away</span>
+                <span class="border px-2 py-1 mr-4" on:click={()=>{value+=" No sugar "}}>No sugar</span>
+                <span class="border px-2 py-1 mr-4" on:click={()=>{value+=" No salt "}}>No salt</span>
 
             </div>
             <div class="my-1.5">
                 Drinks.
             </div>
             <div class="">
-                <span class="border px-2 py-1 mr-4" on:click={()=>{value="Hot "+value}}>Hot</span>
-                <span class="border px-2 py-1 mr-4" on:click={()=>{value="Cold "+value}}>Cold</span>
-                <span class="border px-2 py-1 mr-4" on:click={()=>{value="Room temperature "+value}}>Room temperature</span>
+                <span class="border px-2 py-1 mr-4" on:click={()=>{value+=" Hot "}}>Hot</span>
+                <span class="border px-2 py-1 mr-4" on:click={()=>{value+=" Cold "}}>Cold</span>
+                <span class="border px-2 py-1 mr-4" on:click={()=>{value+=" Room temperature "}}>Room temperature</span>
             </div>
             <div class="my-1.5">
                 Steak.
             </div>
             <div class="mt-2">
-                <span class="border px-2 py-1 mr-4" on:click={()=>{value="medium "+value}}>Medium</span>
-                <span class="border px-2 py-1 mr-4" on:click={()=>{value="Rare "+value}}>Rare</span>
-                <span class="border px-2 py-1 mr-4" on:click={()=>{value="Well done "+value}}>Well done</span>
+                <span class="border px-2 py-1 mr-4" on:click={()=>{value+=" medium "}}>Medium</span>
+                <span class="border px-2 py-1 mr-4" on:click={()=>{value+=" Rare "}}>Rare</span>
+                <span class="border px-2 py-1 mr-4" on:click={()=>{value+=" Well done " }}>Well done</span>
             </div>
         </div>
         <div class="flex justify-center mt-5">

@@ -7,7 +7,7 @@
     headers={[
         { index: 1, title: "Active Orders ("+  $activeOrderStore.length+")"},
         { index: 2, title: "Pending payments" },
-        { index: 3, title: "History" },
+        // { index: 3, title: "History" },
     ]}
     store={myDashBoardPages}
 />

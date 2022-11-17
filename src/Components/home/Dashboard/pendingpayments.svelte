@@ -2,22 +2,28 @@
     import { list } from "firebase/storage";
     import { onMount } from "svelte";
     import { stringify } from "uuid";
-    import {
-        enumComplete,
-    } from "../../../firebase/functions/restaurant_funcs/orders";
+    import { enumComplete } from "../../../firebase/functions/restaurant_funcs/orders";
     import {
         complete_Order,
+        complete_OrderItems,
     } from "../../../firebase/functions/restaurant_funcs/restaurants";
     import { MoneyFormat } from "../../../func_essential";
     import {
         pendingPaymentStore,
         userModelStore,
         activeOrderItemDetailStore,
+        businessModelStore,
     } from "../../../stores";
     import BodyWrapper from "../../bodyWrapper.svelte";
     let selectedId = "*";
     onMount((e) => {});
     let table = [];
+    $: table =
+        $pendingPaymentStore.length != undefined &&
+        table.length != undefined &&
+        $pendingPaymentStore.length != table.length
+            ? []
+            : table;
     $: loadTable = $pendingPaymentStore.forEach((e) => {
         if (!table.includes(e.data().table)) {
             table = [...table, e.data().table];
@@ -33,7 +39,10 @@
     $: y = $activeOrderItemDetailStore.forEach((element) => {
         if (customerIds.includes(element.data.customerId)) {
             console.log(element.data.total, element.data.name);
-            itemDetails = [...itemDetails, { total: element.data.total }];
+            itemDetails = [
+                ...itemDetails,
+                { total: element.data.total, id: element.id },
+            ];
         }
     });
     $: total = itemDetails.reduce((a, { total }) => a + total, 0);
@@ -148,15 +157,19 @@
                                 table.pop(table[Index]);
                             }
                             customerIds.forEach((customerId) => {
-                                complete_Order
-                                (
-                                    $userModelStore.uid,
+                                complete_Order(
+                                    $businessModelStore.BusinessId,
                                     customerId,
                                     enumComplete.paid
                                 );
                                 selectedId = "*";
                             });
-                            
+                            complete_OrderItems(
+                                $businessModelStore.BusinessId,
+                                itemDetails,
+                                enumComplete.paid
+                            );
+                            table = [];
                             customerIds = [];
                         }}
                     >

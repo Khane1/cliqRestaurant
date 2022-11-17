@@ -4,6 +4,7 @@
         screenSizeStore,
         menuListStore,
         notifyUser,
+        businessModelStore,
     } from "../../../../stores";
     import Button from "../../../resuable/buttons/button.svelte";
     import Tags from "../../../resuable/tags/tags.svelte";
@@ -59,6 +60,8 @@
             description: Description,
             price: price,
             avatar: avatar,
+            businessId:$businessModelStore.BusinessId,
+            businessName:$businessModelStore.businessName
         }).then((e) => {
             notifyUser("Created " + name, addNotification, e.message);
         });
@@ -80,7 +83,6 @@
     });
     $: y = $screenSizeStore.size;
 </script>
-
 <div class="mt-5 space-y-4">
     <span class="font-semibold text-2xl"
         >{CreateCategoryTitle}

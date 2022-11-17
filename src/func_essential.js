@@ -18,7 +18,7 @@ export function MoneyFormat(val) {
     return Intl.NumberFormat("en-US").format(val);
 }
 
-export function calculateTotal(selectedId,e,list){
+export function calculateTotal(selectedId, e, list) {
     if (selectedId == e.data.customerId) {
         if (
             list.filter((val) => e.data.customerId != val.customerId)
@@ -53,4 +53,25 @@ export function calculateTotal(selectedId,e,list){
     } else {
         // console.log(e.id);
     }
+}
+
+
+export function getDateToday() {
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, "0");
+    var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
+    var yyyy = today.getFullYear();
+
+    today = yyyy + "/" + mm + "/" + dd;
+    return { today: today, year: yyyy, month: mm, day: dd };
+}
+
+export function dateTransfer(date) {
+    var today = new Date(date);
+    var dd = String(today.getDate()).padStart(2, "0");
+    var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
+    var yyyy = today.getFullYear();
+
+    // today = yyyy + "/" + mm + "/" + dd;
+    return yyyy + '-' + mm + '-' + (parseInt(dd)+1);
 }

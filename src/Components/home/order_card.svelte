@@ -1,11 +1,8 @@
 <script>
-    import {
-        OrderItem_Complete,
-    } from "../../firebase/functions/restaurant_funcs/restaurants";
+    import { OrderItem_Complete } from "../../firebase/functions/restaurant_funcs/restaurants";
     import { MoneyFormat } from "../../func_essential";
-    import { userModelStore } from "../../stores";
+    import { businessModelStore, userModelStore } from "../../stores";
     export let order, dataId;
-   
 </script>
 
 <div>
@@ -24,8 +21,8 @@
                         type="checkbox"
                         disabled
                         checked={order.status == "served"}
-                        on:click={OrderItem_Complete (
-                            $userModelStore.uid,
+                        on:click={OrderItem_Complete(
+                            $businessModelStore.BusinessId,
                             dataId
                         )}
                     />
@@ -37,7 +34,7 @@
                         type="checkbox"
                         checked={order.status == "served"}
                         on:click={OrderItem_Complete(
-                            $userModelStore.uid,
+                            $businessModelStore.BusinessId,
                             dataId
                         )}
                     />

@@ -4,7 +4,7 @@
     import SignUpPreview from "./SignUp_preview.svelte";
     import UserInfo from "./userInfo.svelte";
     import {userModelStore} from '../../../stores'
-    let value = "TheAlef";
+    let value = "";
     let adminName = "Admin";
     let page = 1;
     function changePage(pg) {

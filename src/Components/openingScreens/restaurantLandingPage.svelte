@@ -15,7 +15,7 @@
         in:fly={{ y: 100, duration: 2000 }}
         out:fly={{ y: 50, duration: 500 }}
     >
-        <div class="text-2xl text-green-600">
+        <div style="text-align: center;" class="text-2xl text-green-600">
             Welcome to {$userStore == "authorized"
                 ? $userModelStore.displayName
                 : $customerOrderStore.restaurant}!

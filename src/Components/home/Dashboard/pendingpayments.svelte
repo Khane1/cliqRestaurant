@@ -2,12 +2,13 @@
     import { list } from "firebase/storage";
     import { onMount } from "svelte";
     import { stringify } from "uuid";
+    import { roles } from "../../../firebase/functions/restaurant_funcs/businessLogic";
     import { enumComplete } from "../../../firebase/functions/restaurant_funcs/orders";
     import {
         complete_Order,
         complete_OrderItems,
     } from "../../../firebase/functions/restaurant_funcs/restaurants";
-    import { MoneyFormat } from "../../../func_essential";
+    import { MoneyFormat, royalRights } from "../../../func_essential";
     import {
         pendingPaymentStore,
         userModelStore,
@@ -15,6 +16,8 @@
         businessModelStore,
     } from "../../../stores";
     import BodyWrapper from "../../bodyWrapper.svelte";
+    import ErrorPage from "../../resuable/Error/errorPage.svelte";
+    import NoPermission from "../../resuable/Error/no_permission.svelte";
     let selectedId = "*";
     onMount((e) => {});
     let table = [];
@@ -64,7 +67,11 @@
 <div class="hidden">
     {y}
 </div>
+
 <BodyWrapper>
+    {#if 
+       royalRights($userModelStore)
+    }
     <div class="flex justify-evenly">
         <div class="w-1/2">
             <span
@@ -166,6 +173,7 @@
                             });
                             complete_OrderItems(
                                 $businessModelStore.BusinessId,
+                                $userModelStore.displayName,
                                 itemDetails,
                                 enumComplete.paid
                             );
@@ -185,4 +193,8 @@
             </div>
         </div>
     </div>
+    {:else}
+    <NoPermission/>
+{/if}
+
 </BodyWrapper>

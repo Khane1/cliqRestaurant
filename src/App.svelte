@@ -12,10 +12,15 @@
 		clearMemory,
 		fbMenuStore,
 		businessModelStore,
-        collabListStore,
+		collabListStore,
 	} from "./stores";
 	import { onLoadApp } from "./functions_convert";
-    import { collabListSnapshot } from "./firebase/functions/restaurant_funcs/restaurants";
+	import {
+		collabListSnapshot,
+		loadUser,
+	} from "./firebase/functions/restaurant_funcs/restaurants";
+	import { pingURL } from "./func_essential";
+	import BottomBar from "./Components/myMenu/viewMenu/floating/bottomBar.svelte";
 	let y;
 	function screenSizeChange(y) {
 		screenSizeStore.update((e) => {
@@ -26,14 +31,14 @@
 		console.log(e);
 	}
 	$: $collabListStore.forEach((e) => {
-        if (e.uid == $userModelStore.uid && e.role != $userModelStore.role) {
-            let user = $userModelStore;
-            user.role = e.role;
-            userModelStore.update((e) => {
-                return user;
-            });
-        }
-    });
+		if (e.uid == $userModelStore.uid && e.role != $userModelStore.role) {
+			let user = $userModelStore;
+			user.role = e.role;
+			userModelStore.update((e) => {
+				return user;
+			});
+		}
+	});
 	onMount((e) => {
 		if (
 			window.location.href.includes("customer_order") &&
@@ -45,30 +50,40 @@
 			});
 		}
 		if ($userStore == "authorized") {
-			collabListSnapshot($businessModelStore.BusinessId);
-			onLoadApp($businessModelStore.BusinessId);
-			
+			pingURL();
+			if ($businessModelStore != undefined) {
+				collabListSnapshot($businessModelStore.BusinessId);
+				onLoadApp($businessModelStore.BusinessId);
+			} else {
+				// loadUser($userModelStore);
+			}
 		}
 	});
 </script>
+
 <span class="hidden">
 	{screenSizeChange(y)}
 </span>
 <svelte:window on:change={handleThis} bind:innerWidth={y} />
 <Notifications>
+
 	<main class="flex md:space-x-30 md:space-x-80 ">
 		{#if y > 640}
-		<div class="sm:hidden  md:block ">
-			<Sidebar />
+			<div class="sm:hidden  md:block ">
+				<Sidebar />
 			</div>
 		{/if}
 		<body>
 			<div class=" px-5 py-0">
-					<Routes />
+				<Routes />
 			</div>
 		</body>
 	</main>
 </Notifications>
+
+{#if ($screenSizeStore.size < 768 && $userModelStore.displayName != undefined && $userStore == "authorized")}
+<BottomBar />
+{/if}
 
 <style>
 </style>

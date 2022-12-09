@@ -65,11 +65,12 @@ export async function completeOrder(uid, customerId, enumComplete, db) {
     }
 }
 
-export async function completeOrderItems(uid, items, enumComplete, db) {
+export async function completeOrderItems(uid,name, items, enumComplete, db) {
     try {
         items.forEach(async (e) => {
             await updateDoc(doc(db, 'restaurants', uid, 'order_detail', e.id), {
                 state: enumComplete,
+                servedBy:name
             })
         })
     } catch (error) {

@@ -9,7 +9,8 @@
             return { index: i };
         });
     }
-    $: selected = $store.index != null || $store.index != undefined ? $store.index : 1;
+    $: selected =
+        $store.index != null || $store.index != undefined ? $store.index : 1;
     function switchPage(index) {
         selected = index;
         pageSwitch(index);
@@ -39,7 +40,7 @@
     </div>
 {:else} -->
 <div
-    class="xSmall lg:py-6 sm:py-2 px-32 lg:px-40 sm:px-10 mt-5 sm:mx-5 lg:mx-5"
+    class="xSmall lg:py-6 sm:py-2 {$screenSizeStore.size >600?'px-32':'px-2'} lg:px-40 sm:px-10 mt-5 sm:mx-5 lg:mx-5"
 >
     {#if $screenSizeStore.size > 700}
         <div class="flex justify-evenly">
@@ -50,8 +51,8 @@
                     }}
                     style="pointer:cursor;"
                     class={selected == title.index
-                        ? "shadow px-16 py-3 mr-2 border rounded-lg bg-slate-500 text-white"
-                        : "px-16 py-3 border rounded-lg"}
+                        ? "shadow px-5 py-3 mr-2 border rounded-lg bg-slate-500 text-white"
+                        : "px-5 py-3 border rounded-lg"}
                 >
                     <span
                         on:click={() => {
@@ -71,24 +72,30 @@
                     on:click={() => {
                         switchPage(title.index);
                     }}
+                    class="{isActive(title.index)} px-5 py-3 mr-2
+                        {selected == title.index
+                        ? 'shadow text-sm  border rounded-lg bg-slate-500 text-white'
+                        : ' text-sm border rounded-lg'} "
                     style="pointer:cursor;"
-                    class={selected == title.index
-                        ? "shadow text-sm px-14 ml-2 border rounded-lg bg-slate-500 text-white"
-                        : " text-sm ml-2 px-14 border rounded-lg"}
                 >
-                    <span
-                        on:click={() => {
-                            switchPage(title.index);
-                        }}
-                        class={isActive(title.index)}
-                    >
-                        {title.title}
-                    </span>
+                    {title.title}
                 </button>
             {/each}
         </div>
     {/if}
 </div>
+
+<!-- CliqBox
+Eatery
+Restaurant
+CliqHost
+Butter
+Eats
+Witty
+Jelly
+CupCake
+Bake
+Foodie -->
 
 <!-- {/if} -->
 <style>

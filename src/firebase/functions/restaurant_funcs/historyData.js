@@ -7,11 +7,12 @@ export async function getOrdersByDate(uid, db, from, to) {
         historyDataStore.update((e) => {
             return [];
         })
-        const conditions = [where('state', '==', 'complete'), where('orderTimestamp', '>=', new Date(from)), where('orderTimestamp', '<', new Date(dateTransfer(to)))]
+        console.log(from,dateTransfer(to));
+        const conditions = [where('state', '==', 'complete'), where('orderTimestamp', '>=', new Date(from)), where('orderTimestamp', '<=', new Date(dateTransfer(to)))]
 
         let qry = query(collection(db, 'restaurants', uid, 'order_detail'), ...conditions);
         onSnapshot(qry, async (val) => {
-            console.log('value');
+            console.log(val);
             let x = [];
             val.docs.forEach((e) => {
                 x = [...x, e.data()]

@@ -14,6 +14,8 @@
     import BodyWrapper from "../../bodyWrapper.svelte";
     import Table from "../../history/table.svelte";
     import Team from "../../settings/team.svelte";
+    import DynamicTable from "./teamRoles/dynamic_Table.svelte";
+    import StaticTable from "./teamRoles/static_Table.svelte";
     import UserInfo from "./userInfo.svelte";
     let select = "My Team";
     $: classStyle = (selected) =>
@@ -70,101 +72,27 @@
                 >
             </div>
             <Table headers={[" Name", "Role", "change Role", "action"]}>
+                {#if $userModelStore.role != roles.admin && $userModelStore.role != roles.manager}
+                    {#each $collabListStore as collabs}
+                        <StaticTable bind:collabs />
+                    {/each}
+                {:else}
                 {#each $collabListStore as collabs}
-                    {#if collabs.uid == $businessModelStore.adminIds[0]}
-                        <div class="mt-2" />
-                        <tr class="bg-slate-200">
-                            <td
-                                class="pl-2 py-2  text-sm font-medium text-gray-900whitespace-nowrap"
-                            >
-                                {collabs.name}
-                            </td>
-                            <td
-                                class="text-sm text-gray-900 font-light px-6 py-2 whitespace-nowrap"
-                            >
-                                {collabs.role}
-                            </td>
-                            <td
-                                class="text-sm text-gray-900 font-light px-6 py-2 whitespace-nowrap"
-                            >
-                                Master Account
-                            </td>
-                            <td
-                                class="text-sm font-light px-6 py-2 whitespace-nowrap"
+                        {#if collabs.role == roles.admin&& $businessModelStore.adminIds[0]==collabs.uid}
+                            <StaticTable bind:collabs />
+                        {/if}
+                    {/each}
+                    {#each $collabListStore as collabs}
+                        {#if collabs.role != roles.admin || (collabs.role == roles.admin&& $businessModelStore.adminIds[0]!=collabs.uid) }
+                            <DynamicTable
+                                bind:selectedRole
+                                bind:selectedTeammate
+                                bind:collabs
+                                clearSelection={() => clearSelection()}
                             />
-                        </tr>
-                    {/if}
-                {/each}
-                {#each $collabListStore as collabs}
-                    {#if collabs.uid != $businessModelStore.adminIds[0]}
-                        <div class="mt-2" />
-                        <tr class="bg-slate-50">
-                            <td
-                                class="pl-2 py-2  text-sm font-medium text-gray-900whitespace-nowrap"
-                            >
-                                {collabs.name}
-                            </td>
-                            <td
-                                class="text-sm text-gray-900 font-light px-6 py-2 whitespace-nowrap"
-                            >
-                                {collabs.role}
-                            </td>
-                            <td
-                                class="text-sm text-gray-900 font-light px-6 py-2 whitespace-nowrap"
-                            >
-                                {#if selectedTeammate.uid == collabs.uid || selectedTeammate == ""}
-                                    <select
-                                        bind:value={selectedRole}
-                                        on:change={() => {
-                                            selectedTeammate = collabs;
-                                            console.log(selectedTeammate);
-                                        }}
-                                    >
-                                        <option
-                                            class="bg-slate-500 text-white"
-                                            value=""
-                                        >
-                                            {collabs.role}
-                                        </option>
-                                        <option value={roles.admin}
-                                            >{roles.admin}</option
-                                        >
-                                        <option value={roles.attendant}
-                                            >{roles.attendant}</option
-                                        >
-                                        <option value={roles.cashier}
-                                            >{roles.cashier}</option
-                                        >
-                                        <option value={roles.manager}
-                                            >{roles.manager}</option
-                                        >
-                                        <option value={roles.unallocated}
-                                            >{roles.unallocated}
-                                        </option>
-                                    </select>
-                                {:else}
-                                    <select disabled />
-                                {/if}
-                            </td>
-                            <td
-                                class="text-sm font-light px-6 py-2 whitespace-nowrap"
-                            >
-                                {#if selectedRole.length > 0 && selectedRole != collabs.role && selectedTeammate.uid == collabs.uid}
-                                    <span
-                                        class="ml-3 px-3 py-1 bg-green-500 border rounded text-white"
-                                        on:click={() => {
-                                            updateCollabRole(
-                                                collabs.uid,
-                                                selectedRole
-                                            );
-                                            clearSelection();
-                                        }}>Save</span
-                                    >
-                                {/if}
-                            </td>
-                        </tr>
-                    {/if}
-                {/each}
+                        {/if}
+                    {/each}
+                {/if}
             </Table>
         </div>
     {:else if select == "Invite Teammate"}

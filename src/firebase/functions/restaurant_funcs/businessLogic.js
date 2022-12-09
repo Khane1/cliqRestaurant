@@ -13,19 +13,22 @@ export async function createNewBusiness(auth, userName, businessName, restaurant
         await createUser(auth, restaurantDoc, collaboratorDoc, businessId, roles.admin)
         location.replace("/home")
     } catch (error) {
-        console.log(error);
+        console.debug(error);
     }
 }
 export async function businessListener(restaurantDoc,) {
     try {
         await onSnapshot(restaurantDoc, async (fb) => {
-            console.log(fb.data());
-            businessModelStore.update((e) => {
-                return fb.data();
-            })
+            if(fb.data().BusinessId!=null){
+                businessModelStore.update((e) => {
+                    return fb.data();
+                })
+            }else{
+                alert('An error occured')
+            }
         })
     } catch (error) {
-        console.log(error);
+        console.debug(error);
     }
 }
 

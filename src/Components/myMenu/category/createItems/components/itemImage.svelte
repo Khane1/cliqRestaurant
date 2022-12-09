@@ -23,7 +23,8 @@
         order = [...order.slice(0, index), ...order.slice(index + 1)];
     }
 </script>
-
+{#if $screenSizeStore.size >
+    400}
 <div class="sm:justify-center relative mb-4 rounded-lg ml-5 ">
     <Modal>
         <MenuPopup data={item} bind:order {onclick} {reduce}>
@@ -44,9 +45,9 @@
                 editItemDetailStore.update((e) => item);
             }}
         />
-        {/if}
-        {#if $userStore != "authorized"}
-        {#if $businessModelStore.orderToggle==false}
+    {/if}
+    {#if $userStore != "authorized"}
+        {#if $businessModelStore.orderToggle == false}
             <div />
         {:else if showOption == false}
             <OrderActionButton
@@ -63,13 +64,9 @@
                 onclick={() => onclick()}
             />
         {/if}
-        {/if}
+    {/if}
 
     <div class="py-2">
-        <!-- <div class=" text-black text-sm font-bold ">
-            {Intl.NumberFormat("en-US").format(item.price)}
-            <span class="text-sm">Shs</span>
-        </div>-->
         <span class="font-semibold text-md">
             {item.name}
         </span>
@@ -81,10 +78,59 @@
         </div>
     </div>
 </div>
-
+{:else}
+<Modal>
+    <MenuPopup data={item} bind:order {onclick} {reduce}>
+        <div class="w-full h-full">
+            <div class=" mr-0 ml-5 mb-4">
+                <div class="flex justify-start">
+                    <div class="">
+                                <img
+                                    class="object-cover md:h-40 md:w-60 xl:h-40 xl:w-72 shadow rounded-lg mb-2 {$screenSizeStore.size >
+                                    800
+                                        ? ''
+                                        : 'upload2'}"
+                                    src={item.avatar}
+                                    alt=""
+                                />
+                    </div>                   
+                    <div class="ml-5">
+                        <div class="text-md text-blue-800 font-semibold">{item.name}</div>
+                        <div class="text text-sm text-slate-600">
+                            {item.description} 
+                        </div>
+                        <div class="flex justify-between">
+                            <div class="flex text-md">
+                                <h6 class="text-sm">ugx.</h6>
+                                <h5 class="text-sm font-semibold">
+                                    {MoneyFormat(item.price)}
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+       
+</MenuPopup>
+</Modal>
+{/if}
 <style>
     .upload {
         height: 15rem;
         width: 30rem;
+    }
+
+    .upload2 {
+        height: 6rem;
+        width: 6.2rem;
+    }
+    .text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2; /* number of lines to show */
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
     }
 </style>

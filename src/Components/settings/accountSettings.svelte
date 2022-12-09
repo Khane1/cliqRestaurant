@@ -1,43 +1,53 @@
 <script>
     import { onMount } from "svelte";
     import { orderTogglesettings } from "../../firebase/functions/restaurant_funcs/restaurants";
-    import { businessModelStore, userModelStore } from "../../stores";
+    import { execRights} from "../../func_essential";
+    import { businessModelStore, screenSizeStore, userModelStore } from "../../stores";
+    import SwitchButton from "../resuable/buttons/switchbutton/switchButton.svelte";
 
     $: switcher = false;
     onMount((e) => {
-        switcher = $businessModelStore.orderToggle;
+        switcher =
+            $businessModelStore != undefined
+                ? $businessModelStore.orderToggle
+                : false;
     });
 </script>
 
 <div class="">
-    <div class="space-y-3 px-10 py-5">
+    <div class="space-y-3 {$screenSizeStore.size > 600?'px-10':''}  py-5">
         <span class="font-bold pb-5 flex justify-center">Account Settings</span>
 
+        {#if execRights($userModelStore)}
         <div class="flex justify-between">
-            <div>
-                <span class="font-semibold"> Customer Orders </span>
                 <div>
-                    <span class="text-sm"
-                        >Your customers can make orders with the app</span
-                    >
+                    <span class="font-semibold"> Customer Orders </span>
+                    <div>
+                        <span class="text-sm"
+                            >Your customers can make orders with the app</span
+                        >
+                    </div>
+                </div>
+                <div>
+                    <SwitchButton
+                        switchFunc={() => {
+                            if (execRights($userModelStore)) {
+                                orderTogglesettings(
+                                    $businessModelStore.BusinessId,
+                                    !switcher
+                                );
+                            } else {
+                                alert(
+                                    "Sorry you don't have rights to make this change"
+                                );
+                            }
+                        }}
+                        bind:switcher
+                    />
                 </div>
             </div>
-            <div>
-                <label class="switch">
-                    <input
-                        type="checkbox"
-                        on:change={() =>
-                            orderTogglesettings(
-                                $businessModelStore.BusinessId,
-                                !switcher
-                            )}
-                        bind:checked={switcher}
-                    />
-                    <span class="slider round" />
-                </label>
-            </div>
-        </div>
-        <hr />
+            <hr />
+            {/if}
         <div>
             <div class="flex justify-between pb-4">
                 <span class="font-semibold">Email</span>
@@ -67,68 +77,3 @@
         </div>
     </div>
 </div>
-
-<style>
-    /* The switch - the box around the slider */
-    .switch {
-        position: relative;
-        display: inline-block;
-        width: 60px;
-        height: 34px;
-    }
-
-    /* Hide default HTML checkbox */
-    .switch input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-    }
-
-    /* The slider */
-    .slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #ccc;
-        -webkit-transition: 0.4s;
-        transition: 0.4s;
-    }
-
-    .slider:before {
-        position: absolute;
-        content: "";
-        height: 26px;
-        width: 26px;
-        left: 4px;
-        bottom: 4px;
-        background-color: white;
-        -webkit-transition: 0.4s;
-        transition: 0.4s;
-    }
-
-    input:checked + .slider {
-        background-color: #2196f3;
-    }
-
-    input:focus + .slider {
-        box-shadow: 0 0 1px #2196f3;
-    }
-
-    input:checked + .slider:before {
-        -webkit-transform: translateX(26px);
-        -ms-transform: translateX(26px);
-        transform: translateX(26px);
-    }
-
-    /* Rounded sliders */
-    .slider.round {
-        border-radius: 34px;
-    }
-
-    .slider.round:before {
-        border-radius: 50%;
-    }
-</style>

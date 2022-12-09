@@ -1,4 +1,4 @@
-import { setDoc,doc, onSnapshot, query, where, collection, updateDoc } from 'Firebase/firestore';
+import { setDoc, doc, onSnapshot, query, where, collection, updateDoc } from 'Firebase/firestore';
 import { collabListStore } from '../../../stores';
 import { updateUserModelstore, } from "../../firebase";
 import { updateCollaborators } from './businessLogic';
@@ -28,19 +28,23 @@ export async function streamUsersById(db, b_Id) {
 
     await onSnapshot(query(collection(db, 'collaborators'), where("BusinessId", "==", b_Id),), async (fb) => {
         let list = [];
-        fb.docs.forEach(element => {
-            let val = element.data();
-            list = [...list, {
-                name: val.name, contact: val.contacts[0],
-                lastLoggedIn:
-                    new Date(val.lastLoggedIn.seconds * 1000).toLocaleDateString()
-                , role: val.role, status: val.status, uid: val.uid
-            }]
-        });
-        collabListStore.update((e) => {
-            return list;
-        })
+        if (fb.docs.length != 0) {
+
+            fb.docs.forEach(element => {
+                let val = element.data();
+                list = [...list, {
+                    name: val.name, contact: val.contacts[0],
+                    lastLoggedIn:
+                        new Date(val.lastLoggedIn.seconds * 1000).toLocaleDateString()
+                    , role: val.role, status: val.status, uid: val.uid
+                }]
+            });
+            collabListStore.update((e) => {
+                return list;
+            })
+        }
     })
+
 
 }
 

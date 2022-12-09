@@ -44,3 +44,14 @@ Code collaborator url: baseurl/uid/:authtoken
     button, copy and paste the URL below into your web browser: 
         https://rave-api-v3-2.tls-flutterwave.com/0a0d1ffffb887b6794a4795894a06bb729bc028e8?
         token=FLW--9040e2c001ab756dd16ac1877f10b682-A8-1667324144067
+
+
+Admin can do everything
+
+Manager,cashier can view and act on Active orders
+Cashier can clear payments cash
+
+Attendant can view orders
+
+
+Manager can assign roles

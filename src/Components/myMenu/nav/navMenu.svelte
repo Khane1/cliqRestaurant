@@ -147,9 +147,11 @@
             {/if}
             <div
                 class="{$screenSizeStore.size < 800
-                    ? 'mt-36'
-                    : 'mt-8'} grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 justify-center"
-            >
+                    ? 
+                    'mt-36'
+                    : 'mt-8'} 
+                    grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"
+                    >
                 {#each $fbMenuStore.value as item}
                     {#if (selectedId == item.categoryId && selectedSub == item.subItemId) || (selectedId == item.categoryId && selectedSub == "*") || (selectedId == "pinned" && selectedSub == "pinned" && item.pin != undefined && item.pin != null && item.pin == true) || (selectedId == "pinned" && selectedSub == "pinned" && item.subItemId.includes(Math.floor(Math.random() * 10)))}
                         <ItemImage
@@ -189,7 +191,7 @@
 <!-- ....................Floating Bottom Items......................... -->
 {#if $businessModelStore.orderToggle == true}
     {#if !readyToEat}
-        <AToButton bind:order bind:checkOutPage bind:readyToEat bind:notes />
+        <AToButton bind:total bind:order bind:checkOutPage bind:readyToEat bind:notes />
     {/if}
 {/if}
 {#if $screenSizeStore.size < 800 && selectedId != "welcome"}
@@ -214,8 +216,12 @@
                 <span
                     class="font-bold text-xl mr-10 border rounded-full px-3 py-1 bg-red-500 text-white"
                     on:click={() => {
-                        checkOutPage = !checkOutPage;
-                        readyToEat = false;
+                        if(notes==true){
+                            notes=false;
+                        }else{
+                            checkOutPage = !checkOutPage;
+                            readyToEat = false;
+                        }
                     }}
                 >
                     X
@@ -253,9 +259,9 @@
                 <SubCategoryList bind:selectedId bind:selectedSub />
             </div>
         {:else}
-            <div class="flex  mt-0 mb-0 justify-between mr-10">
-                <h3>My Order</h3>
-                <h3 class="font-semibold text-lg">shs.{MoneyFormat(total)}</h3>
+            <div class="flex my-3 mb-0 justify-between mr-10">
+                <h3 class="font-semibold">Review Order</h3>
+                <h3 class="text-lg">shs.{MoneyFormat(total)}</h3>
             </div>
         {/if}
     </div>

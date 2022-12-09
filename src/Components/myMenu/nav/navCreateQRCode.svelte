@@ -7,16 +7,21 @@
     import Header from "../../resuable/header.svelte";
     import TextInput from "../../resuable/text_input.svelte";
     import GenerateQr from "../createQrCode/generateQr.svelte";
-    $: value = value == null ? "" : value;
+    import SwitchButton from "../../resuable/buttons/switchbutton/switchButton.svelte";
+    $: value = value == null ? 1 : value;
     let assignedValue;
     let placeholder = "#";
     let url = "";
-    let color = "#725bff";
-    let textColor = "#ffffff";
+    let color = "#ffffff";
+    let textColor = "#000000";
+    let showTableNumber = false;
     let downloadOption = "";
+    let topTitle = "OUR MENU";
+    let bottomTitle = $businessModelStore.businessName;
     function resetColors() {
-        color = "#725bff";
-        textColor = "#ffffff";
+        // color = "#725bff";
+        color = "#ffffff";
+        textColor = "#000000";
     }
     $: downloading = false;
 
@@ -52,20 +57,24 @@
     }
     // window.jsPDF = window.jspdf.jsPDF;
     function singleScreenShot(filename) {
-        // your code to be executed after 1 second
+        // window.devicePixelRatio = 2;
+
+        // // your code to be executed after 1 second
         // html2canvas(document.getElementById("qrBoxID"), {
         //     allowTaint: true,
         //     useCORS: true,
+        //     scale: 5,
         // })
         //     .then(function (canvas) {
         //         // It will return a canvas element
-        //         let image = canvas.toDataURL("image/png", 10);
+        //         let image = canvas.toDataURL("image/png", 20);
         //         url = image;
         //         const createEl = document.createElement("a");
         //         createEl.href = url;
 
         //         // This is the name of our downloaded file
-        //         createEl.download = $businessModelStore.businessName+" Table " + filename;
+        //         createEl.download =
+        //             $businessModelStore.businessName + " Table " + filename;
         //         createEl.click();
         //         // window.location.href = image;
         //     })
@@ -78,11 +87,11 @@
     }
 
     function downloadPDFPage(filename) {
-        var doc = new jsPDF();
+        var doc = new jsPDF("p", "pt", "a4", true);
 
         // Source HTMLElement or a string containing HTML.
         var elementHTML = document.getElementById("qrBoxID");
-
+        doc.internal.write(0, "Tw");
         doc.html(elementHTML, {
             callback: function (doc) {
                 // Save the PDF
@@ -93,15 +102,21 @@
                         ".pdf"
                 );
             },
-            margin: [10,10,10,10],
+            margin: [90, 20, 20, 80],
             autoPaging: "text",
             x: 0,
             y: 0,
-            width: 200, //target width in the PDF document
-            // height:150,
-            windowWidth: 675, //window width in CSS pixels
-            // windowWidth: 190, //window width in CSS pixels
-        
+            // image: { type: "png", quality: 100 },
+            html2canvas: {
+                // scale: 0.238,
+                scale:1,
+                // allowTaint: true,
+                // letterRendering: true,
+                // svgRendering: true,
+            },
+            // width: 100, //target width in the PDF document
+            // // height:0,
+            // windowWidth: 1000, //window width in CSS pixels
         });
     }
     onMount((e) => {
@@ -114,6 +129,22 @@
         <Header title="Create Qr Codes" />
         <div class=" flex justify-between">
             <div>
+                <label for="" class=" space-y-2">
+                    <span> Change top title </span>
+                    <div>
+                        <input type="text" class="px-2" bind:value={topTitle} />
+                    </div>
+                </label>
+                <label for="" class=" space-y-2 my-2">
+                    <span class="mt-2"> Change bottom text </span>
+                    <div>
+                        <input
+                            type="text"
+                            class="px-2"
+                            bind:value={bottomTitle}
+                        />
+                    </div>
+                </label>
                 Choose download Option
                 <div class="border rounded p-5  mb-10 space-y-5">
                     <label for="" class="flex justify-between space-x-5">
@@ -140,20 +171,41 @@
                                 ? 'hidden'
                                 : ''}">How many Table Codes do you want?</span
                         >
-                        <span
-                            class="text-md {downloadOption != 'single'
-                                ? 'hidden'
-                                : ''}">Input table number.</span
-                        >
+                        {#if downloadOption != "multiple"}
+                            <div class={downloadOption == "" ? "hidden" : ""}>
+                                <label for="" class="flex justify-between mb-5">
+                                    <span> Show table number </span>
+                                    <SwitchButton
+                                        switchFunc={() => {
+                                            value = 1;
+                                        }}
+                                        bind:switcher={showTableNumber}
+                                    />
+                                </label>
+                            </div>
+                        {/if}
+                        {#if showTableNumber == true}
+                            <span
+                                class="text-md {downloadOption != 'single'
+                                    ? 'hidden'
+                                    : ''}">Input table number.</span
+                            >
+                        {/if}
                     </div>
 
-                    <div
-                        class="h-32 w-1/2 {downloadOption == ''
-                            ? 'hidden'
-                            : ''}"
-                    >
-                        <TextInput bind:value placeholder="2" isText={false} />
-                    </div>
+                    {#if showTableNumber == true || downloadOption == "multiple"}
+                        <div
+                            class="h-10 w-1/2 mb-5{downloadOption == ''
+                                ? 'hidden'
+                                : ''}"
+                        >
+                            <TextInput
+                                bind:value
+                                placeholder="2"
+                                isText={false}
+                            />
+                        </div>
+                    {/if}
                 </div>
 
                 <div>
@@ -203,13 +255,13 @@
                     </div>
                 </div>
                 <div id="qrBoxID">
-                    <div style="background-color:{color}" class="qrBox px-10">
+                    <div style="background-color:{color}" class="border qrBox ">
                         <span
-                            style="color:{textColor}"
-                            class="qrTitle flex justify-center font-bold text-white text-3xl"
-                            >{$businessModelStore.businessName}</span
+                            style="color:{textColor};text-align:center"
+                            class="qrTitle flex justify-center font-bold text-white text-2xl w-60"
+                            >{topTitle}</span
                         >
-                        <div class="p-4 bg-white">
+                        <div class="p-4 bg-white rounded-lg">
                             <GenerateQr
                                 codeValue="{window.location
                                     .origin}/customer_order/{$businessModelStore.businessName}/{downloadOption ==
@@ -219,23 +271,29 @@
                                 squareSize="200"
                             />
                         </div>
-
+                        {#if showTableNumber == true}
+                            <span
+                                style="color:{textColor}"
+                                class=" flex justify-center pt-4  font-bold"
+                                >Table {downloading == false
+                                    ? value
+                                    : $downloadQrTableStore.table}</span
+                            >
+                        {/if}
                         <span
-                            style="color:{textColor}"
-                            class=" flex justify-center pt-4  font-bold"
-                            >Table {downloading == false
-                                ? value
-                                : $downloadQrTableStore.table}</span
-                        >
-                        <span
-                            class=" flex justify-center text-sm font-bold text-orange-200"
+                            class=" flex justify-center text-sm font-bold text-orange-500"
                             >{assignedValue}</span
                         >
                         <span
+                            style="color:{textColor}; text-align:center;"
+                            class="qrTitle flex justify-center text-white text-lg w-60"
+                            >{bottomTitle}</span
+                        >
+                        <!-- <span
                             style="color:{textColor}"
                             class=" flex justify-center text-sm"
                             >Product of Cliq</span
-                        >
+                        > -->
                     </div>
                 </div>
 
@@ -261,8 +319,10 @@
         /* border-radius: 15px; */
         /* background-color: #725bff; */
         /* background-color:rgb(5, 74, 249); */
-        padding-top: 10px;
-        padding-bottom: 10px;
+        padding-top: 50px;
+        padding-bottom: 40px;
+        padding-left: 40px;
+        padding-right: 40px;
     }
     .qrTitle {
         padding-bottom: 20px;

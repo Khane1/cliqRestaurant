@@ -14,12 +14,13 @@
                 : 0;
     });
 </script>
+<div class="body overflow-auto">
 
-<div class="h-1/5">
+<div class="h-full w-full">
     <img src={data.avatar} class="image w-full h-1/5" alt="" />
 </div>
 <div class="mt-5">
-    <span class="font-bold text-xl ">
+    <span class="font-semibold text-lg ">
         {data.name}
     </span>
     <div class="flex mt-1 text-lg  text-red-500 font-semibold ">
@@ -29,23 +30,29 @@
         </h5>
     </div>
 </div>
-<div class=" text-black text-md mt-4">
-    {data.description}
+<div class=" text-black text-md mt-4 mb-4 pb-2">
+    {data.description} 
 </div>
 {#if $userStore != "authorized"}
     {#if $businessModelStore.orderToggle == true}
         <PopActBtn
-            bind:pressed
             bind:count
             reduce={() => reduce()}
             onclick={() => onclick()}
         />
     {/if}
 {/if}
+</div>
 
 <style>
     .image {
         border-bottom-left-radius: 30px;
         border-bottom-right-radius: 30px;
     }
+    .body{
+        scroll-behavior: auto;
+        background-color: white;
+   max-width: fit-content;
+   max-height: fit-content;
+  }
 </style>

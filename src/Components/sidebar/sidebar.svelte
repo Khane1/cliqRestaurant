@@ -2,6 +2,7 @@
   import { onMount, onDestroy } from "svelte";
   import { stringify } from "uuid";
   import { loadUser } from "../../firebase/functions/restaurant_funcs/restaurants";
+    import { execRights } from "../../func_essential";
 
   import {
     pageNameStore,
@@ -31,50 +32,48 @@
       });
     }
   });
- onMount((e)=>{
-
-  //  loadUser($userModelStore)
- })
+  onMount((e) => {
+  });
   onDestroy(unsubscribe);
 </script>
 
 <aside class="w-80 fixed left-0 top-0 h-screen p-5">
   {#if $userStore == "authorized" && $userStore != undefined && $userStore != null}
-    <h1 class="text-white text-2xl font-extrabold">
-      {$businessModelStore.businessName == undefined
+    <h1 class="text-white text-3xl font-extrabold">
+      {$businessModelStore == undefined 
         ? "Loading..."
         : $businessModelStore.businessName}
     </h1>
-    <h1 class="text-slate-300 text-lg font-extrabold">CLIQ MINI SERVICE</h1>
-    <h1 class="text-slate-300">{$userModelStore.displayName}</h1>
+    <h1 style='text-transform:capitalize'class="text-slate-300 text-lg font-extrabold ">{$userModelStore.displayName}</h1>
+
+    <h1  style='text-transform:capitalize' class="text-slate-300 text-sm">{$userModelStore.role}</h1>
   {/if}
   <div class="mt-20">
     {#if $userStore == "authorized" && $userStore != "" && $userStore != undefined && $userStore != null}
       <ul class="relative align-middle">
-        {#if $businessModelStore.orderToggle==true}
-        <li class="relative">
-          <a
-            class="{$pageNameStore.pageName == 'home'
-              ? 'isActive'
-              : ''} flex items-center justify-center text-white text-ellipsis transition duration-300 ease-in-out"
-            href="/home"
-            data-mdb-ripple="true"
-            data-mdb-ripple-color="dark"
-          >
-            {#if $activeOrderStore.length > 0}
-
-              <span>
-                Active Orders <span
-                  class="bg-white font-bold ml-3 px-2.5 py-0.5 text-slate-600 text-sm rounded-full"
-                >
-                  {$activeOrderStore.length}
+        {#if $businessModelStore != undefined && $businessModelStore.orderToggle == true}
+          <li class="relative">
+            <a
+              class="{$pageNameStore.pageName == 'home'
+                ? 'isActive'
+                : ''} flex items-center justify-center text-white text-ellipsis transition duration-300 ease-in-out"
+              href="/home"
+              data-mdb-ripple="true"
+              data-mdb-ripple-color="dark"
+            >
+              {#if $activeOrderStore.length > 0}
+                <span>
+                  Active Orders <span
+                    class="bg-white font-bold ml-3 px-2.5 py-0.5 text-slate-600 text-sm rounded-full"
+                  >
+                    {$activeOrderStore.length}
+                  </span>
                 </span>
-              </span>
-            {:else}
-              <span> Active Orders </span>
-            {/if}
-          </a>
-        </li>
+              {:else}
+                <span> Active Orders </span>
+              {/if}
+            </a>
+          </li>
         {/if}
         <li class="relative">
           <a
@@ -87,6 +86,7 @@
             ><span> My menu </span>
           </a>
         </li>
+        {#if execRights($userModelStore)}
         <li class="relative">
           <a
             on:click={() => {
@@ -101,6 +101,8 @@
             ><span> Team </span>
           </a>
         </li>
+        {/if}
+        {#if execRights($userModelStore)}
         <li class="relative">
           <a
             class=" {$pageNameStore.pageName == 'history'
@@ -112,12 +114,10 @@
             ><span> History </span>
           </a>
         </li>
-
+{/if}
         <li class="relative">
           <a
-            on:click={() => {
-              // signOut();
-            }}
+           
             class=" {$pageNameStore.pageName == 'settings'
               ? 'isActive'
               : ''} flex items-center justify-center text-white text-ellipsis transition duration-300 ease-in-out"
@@ -127,7 +127,6 @@
             ><span> Settings </span>
           </a>
         </li>
-       
       </ul>
     {:else if $userStore != "authorized"}
       <h1 class="cliqHeader text-white text-2xl font-extrabold">
@@ -135,6 +134,10 @@
       </h1>
     {/if}
   </div>
+  {#if $userStore == "authorized" && $userStore != undefined && $userStore != null}
+  <h1 style="position: fixed;
+  bottom: 30px;" class="text-slate-300 text-lg font-extrabold ">CLIQ MINI SERVICE</h1>
+{/if}
 </aside>
 
 <!-- <audio

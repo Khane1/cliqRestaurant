@@ -1,3 +1,5 @@
+import { roles } from "./firebase/functions/restaurant_funcs/businessLogic";
+
 export function similar(a, b) {
     var equivalency = 0;
     var minLength = (a.length > b.length) ? b.length : a.length;
@@ -73,5 +75,60 @@ export function dateTransfer(date) {
     var yyyy = today.getFullYear();
 
     // today = yyyy + "/" + mm + "/" + dd;
-    return yyyy + '-' + mm + '-' + (parseInt(dd)+1);
+    return yyyy + '-' + mm + '-' + (parseInt(dd) + 1);
+}
+
+
+export function pingURL() {
+    try {
+
+        // The custom URL entered by user
+        var URL = "https://www.google.com/";
+        var Http = new XMLHttpRequest();
+        // // Sends the request and observes the response
+        Http.open('GET', URL);
+        Http.send();
+        Http.onreadystatechange = (e) => {
+            statusChecker(Http.status)
+        }
+
+    } catch (error) {
+        alert(error)
+    }
+}
+
+function statusChecker(e) {
+    switch (e) {
+        case 200: {
+            console.log("Status 200: Page is up!");
+        };
+            break;
+        case 400: {
+            alert("Status 400: Page is down.");
+        }
+            break;
+
+        case 0: {
+            alert("Internet is down.");
+        };
+            break;
+
+    };
+}
+
+export function execRights(user) {
+    return (user.role == roles.manager ||
+        user.role == roles.admin)
+}
+
+export function royalRights(user) {
+    return (user.role == roles.manager ||
+        user.role == roles.admin ||
+        user.role == roles.cashier)
+}
+
+export function crudRights(user) {
+    console.log(user.role);
+    return (user.role == roles.attendant ||
+      user.role == roles.admin || user.role == roles.manager)
 }

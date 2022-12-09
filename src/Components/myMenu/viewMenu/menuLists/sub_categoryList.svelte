@@ -41,9 +41,6 @@
         overflow-x: scroll;
     }
 
-    a.scrollItem {
-        display: inline-block;
-    }
     div.scrollmenu {
         overflow: auto;
         white-space: nowrap;

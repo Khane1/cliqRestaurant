@@ -2,17 +2,25 @@ import { initializeApp, } from 'firebase/app';
 import { getAuth, } from 'firebase/auth'
 import { checkAuth } from '../appscripts';
 import { userModelStore, userStore } from '../stores';
-
-export let process;
-const firebaseConfig = 
- {
-   
-};
-
+// import functions from 'firebase-functions'
+// export let process;
+// const configure = functions.config()
+// const config = configure.cliqrestaurant;
+const firebaseConfig =
+{
+    // apiKey: config.appkey,
+    // authDomain: config.authdomain,
+    // projectId: config.project_id,
+    // storageBucket: config.storagebucket,
+    // messagingSenderId: config.messaging_sender_id,
+    // appId: config.app_id,
+    // measurementId: config.measurement_id  
+}
 export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app)
 
 export function sendRequest() {
+    
     if (auth.currentUser) {
         auth.currentUser.
             getIdToken(true)

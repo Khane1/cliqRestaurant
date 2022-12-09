@@ -7,8 +7,8 @@ import { userStore } from "../../stores";
     import SignIn from "./signIn.svelte";
     import SignUp from "./SignUp.svelte";
     let page = "signIn";
-    let email ='xmp@yahoo.com'
-    let password='12345678'
+    let email =''
+    let password=''
     function onPageChange(newPage) {
         page = newPage;
     }

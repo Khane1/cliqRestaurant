@@ -31,16 +31,16 @@ export async function OrderItem_Complete(uid, dataId) {
 export async function complete_Order(uid, customerId, enumComplete) {
     return await completeOrder(uid, customerId, enumComplete, db)
 }
-export async function complete_OrderItems(uid, items, enumComplete) {
-    return await completeOrderItems(uid, items, enumComplete, db)
+export async function complete_OrderItems(uid,name, items, enumComplete) {
+    return await completeOrderItems(uid,name, items, enumComplete, db)
 }
 export async function getPending_Payments(uid) {
     return await getPendingPayments(uid, db);
 }
 export async function getCategoriesForOrder(name) {
     return await getDocs(query(collection(db, 'restaurants'), where("businessName", "==", name))).then((res) => {
-        businessModelStore.update((e)=>{
-            return {orderToggle:res.docs[0].data().orderToggle,businessName:res.docs[0].data().businessName}
+        businessModelStore.update((e) => {
+            return { orderToggle: res.docs[0].data().orderToggle, businessName: res.docs[0].data().businessName }
         })
         return res.docs[0].data().BusinessId
     })
@@ -53,12 +53,15 @@ export async function orderTogglesettings(b_Id, toggle) {
 export async function getCategories(uid) {
     onSnapshot(query(collection(db, 'restaurants', uid, 'menu')), async (fb) => {
         let list = [];
-        fb.docs.forEach((val) => {
-            list = [...list, val.data()]
-        })
-        categoryStore.update((e) => {
-            return { value: list, uid: uid };
-        });
+        if (fb.docs.length != 0) {
+
+            fb.docs.forEach((val) => {
+                list = [...list, val.data()]
+            })
+            categoryStore.update((e) => {
+                return { value: list, uid: uid };
+            });
+        }
     })
 }
 
@@ -71,13 +74,14 @@ export async function collabListSnapshot(b_Id) {
 export async function getMenuItems(uid) {
     onSnapshot(query(collection(db, 'menuItems'), where("menuId", "==", uid), limit(100)), async (fb) => {
         let list = [];
-        fb.docs.forEach((val) => {
-            list = [...list, val.data()]
-        })
-        fbMenuStore.update((e) => {
-            return { value: list };
-        });
-
+        if (fb.docs.length != 0) {
+            fb.docs.forEach((val) => {
+                list = [...list, val.data()]
+            })
+            fbMenuStore.update((e) => {
+                return { value: list };
+            });
+        }
     })
 }
 ///////////////////////Business Signup/////////////////////////////////////////

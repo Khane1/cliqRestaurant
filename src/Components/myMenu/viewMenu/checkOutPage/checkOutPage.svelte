@@ -7,7 +7,7 @@
 </script>
 
 {#if !notes}
-    <div class="mt-36">
+    <div class="mt-20">
         <div class="w-full px-1 h-full">
             {#if order.length > 0}
                 {#each order as order}
@@ -21,13 +21,10 @@
                                 />
                             </div>
                             <div class="ml-5">
-                                <div>
+                                <div class="font-semibold text-blue-900">
                                     {order.data.name}
                                 </div>
-                                <div class="flex justify-start ">
-                                    {order.data.description}
-                                </div>
-                                <div class="text-red-500">
+                                <div class="">
                                     ugx.{order.data.price}
                                 </div>
                                 <div class="flex justify-between">
@@ -83,7 +80,7 @@
         </div>
     </div>
 {:else}
-    <Notes bind:value bind:selected bind:order bind:notes/>
+    <Notes bind:value bind:selected bind:order bind:notes />
 {/if}
 
 <style>

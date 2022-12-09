@@ -8,9 +8,9 @@ export async function submitCategory(data) {
   return await createCategory(data)
   // return await checkIfConnected(data)
 }
-export async function submitSubMenu(data,b_id) {
+export async function submitSubMenu(data, b_id) {
   // changeToNextScreen(number)
-  return await createSubItems(data,b_id)
+  return await createSubItems(data, b_id)
   // return await checkIfConnected(data)
 }
 export async function submitItems(data) {
@@ -42,7 +42,7 @@ export async function onLoadApp(uid) {
   try {
     await getfbCategories(uid);
     await getPending_Payments(uid);
-    await getAllMyOrders(uid,[]);
+    await getAllMyOrders(uid, []);
     await historyOnAppStart(uid);
     await businessSnapshot(uid);
   } catch (error) {
@@ -52,6 +52,9 @@ export async function onLoadApp(uid) {
 
 async function historyOnAppStart(uid) {
   let date = getDateToday();
-  let from = date.year + '-' + date.month + '-' + (date.day);
-  await getOrders_ByDate(uid, from, from)//from and to
+  let from = date.year + '-' + date.month + '-' + (date.day - 1);
+  let to = date.year + '-' + date.month + '-' + (date.day);
+
+  await getOrders_ByDate(uid, from, to)//from and to
 }
+

@@ -4,23 +4,31 @@
         activeOrderStore,
         activeOrderItemDetailStore,
         businessModelStore,
+        screenSizeStore,
     } from "../../../stores";
     import { onMount } from "svelte";
     import BodyWrapper from "../../bodyWrapper.svelte";
-    import { complete_Order, getAllMyOrders } from "../../../firebase/functions/restaurant_funcs/restaurants";
-    import OrderCard from "../order_card.svelte";
-    import { MoneyFormat } from "../../../func_essential";
     import {
-        enumComplete,
-    } from "../../../firebase/functions/restaurant_funcs/orders";
+        complete_Order,
+        getAllMyOrders,
+    } from "../../../firebase/functions/restaurant_funcs/restaurants";
+    import OrderCard from "../order_card.svelte";
+    import { MoneyFormat, royalRights } from "../../../func_essential";
+    import { enumComplete } from "../../../firebase/functions/restaurant_funcs/orders";
+    import { roles } from "../../../firebase/functions/restaurant_funcs/businessLogic";
+    import OrderDetails from "./table/order_details.svelte";
+    import OrderList from "./table/order_List.svelte";
     let selectedId = "all";
     let orderId = 0;
     let list = [];
     let itemDetails = [];
     let table = [];
-    $:table=
-    $activeOrderStore.length!=undefined&& table.length!=undefined&&
-    $activeOrderStore.length!=table.length?[]:table;
+    $: table =
+        $activeOrderStore.length != undefined &&
+        table.length != undefined &&
+        $activeOrderStore.length != table.length
+            ? []
+            : table;
     $: getTables = $activeOrderStore.forEach((e) => {
         if (!table.includes(e.data().table)) {
             table = [...table, e.data().table];
@@ -29,8 +37,7 @@
         }
     });
     let business;
-    onMount(async (e) => {
-    });
+    onMount(async (e) => {});
     $: x = $activeOrderItemDetailStore.forEach((e) => {
         //after getting individual Items
         $activeOrderStore.forEach((order) => {
@@ -94,93 +101,41 @@
         Serve and view your customer's active orders
     </div>
 
-    <div class="flex justify-evenly">
-        <div class=" px-2 py-1 mb-3 w-1/3">
+    <div class="flex {$screenSizeStore.size > 500? 'justify-evenly':'justify-start'}">
+        <div class=" px-2 py-1 mb-3 {$screenSizeStore.size > 500?'w-1/3':'w-full'}">
+            {#if selectedId == "all"}
             <span class="flex justify-center font-bold underline"
                 >Table Orders</span
             >
+            {/if}
             <div class=" px-1 py-1" />
             {#if $activeOrderStore.length > 0}
-                {#each table as table}
-                    <div class=" px-1 py-1">
-                        <span
-                            class={selectedId == table ? "font-bold" : ""}
-                            on:click={() => {
-                                itemDetails = [];
-                                x;
-                                selectedId = table;
-                                console.log(selectedId);
-                                // console.log(table.data().customerId);
-                            }}
-                        >
-                            Table {table}
-                        </span>
-                    </div>
-                {/each}
+                {#if $screenSizeStore.size > 500}
+                    <OrderList
+                        bind:table
+                        bind:selectedId
+                        bind:itemDetails
+                        bind:x
+                    />
+                {:else if selectedId == "all"}
+                    <OrderList
+                        bind:table
+                        bind:selectedId
+                        bind:itemDetails
+                        bind:x
+                    />
+                {/if}
             {:else}
                 <div class="text-sm flex justify-center">
                     No active tables yet!
                 </div>
             {/if}
         </div>
-        <div class="w-full ml-10 px-5 py-5 border rounded-xl shadow-sm mb-5">
-            <div class="font-semibold underline">
-                Table {selectedId == "*" ? "Number" : selectedId}
-            </div>
-            <div class="mb-2 text-sm">Click to crossout what is completed.</div>
-            {#if selectedId == "*"}
-                <div class="text-sm text-blue-600">
-                    Select a table number to see order details.
-                </div>
-            {/if}
-            {#each $activeOrderStore as table}
-                {#if selectedId == table.data().table}
-                    <div class=" my-2.5">
-                        <div class="text-sm text-orange-500">
-                            {table.data().customerId}
-                        </div>
-                        <div class="text-sm">
-                            Status : <span class="font-semibold text-green-500">
-                                {table.data().state}
-                            </span>
-                        </div>
-                    </div>
-
-                    {#each $activeOrderItemDetailStore as order}
-                        {#if table.data().customerId == order.data.customerId}
-                            <OrderCard order={order.data} dataId={order.id} />
-                        {/if}
-                    {/each}
-                {/if}
-            {/each}
-            {#if selectedId != "all"}
-                <div class="flex justify-end ">
-                    <span>
-                        Total : {MoneyFormat(total)}
-                    </span>
-                </div>
-            {/if}
-            <div class="flex justify-end mt-3">
-                {#if !itemDetails.filter((val) => "unserved" == val.status).length > 0 && selectedId != "all"}
-                    <span
-                        class="border rounded-md mx-2 px-5 py-1 bg-blue-500 text-white"
-                        on:click={() => {
-                            itemDetails.forEach((e) => {
-                                complete_Order(
-                                    $businessModelStore.BusinessId,
-                                    e.customerId,
-                                    enumComplete.pending
-                                ),
-                                    (selectedId = "all");
-                            });
-                        }}>next order</span
-                    >
-                {/if}
-            </div>
-            {#if selectedId == "all"}
-                Open Table orders
-            {/if}
-        </div>
+        {#if $screenSizeStore.size > 500}
+            <OrderDetails bind:selectedId bind:total bind:itemDetails />
+        {:else if selectedId != "all"}
+            <OrderDetails bind:selectedId bind:total bind:itemDetails />
+        {/if}
     </div>
 </BodyWrapper>
 

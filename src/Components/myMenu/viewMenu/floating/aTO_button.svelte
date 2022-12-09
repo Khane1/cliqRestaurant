@@ -4,15 +4,16 @@
         customerOrderHistory,
         customerOrderStore,
         notifyUser,
-        categoryStore
+        categoryStore,
     } from "../../../../stores";
     let loading = false;
     import { getNotificationsContext } from "svelte-notifications";
+    import { MoneyFormat } from "../../../../func_essential";
     const { addNotification } = getNotificationsContext();
-    export let order, checkOutPage, readyToEat, notes;
+    export let order, checkOutPage, readyToEat, notes, total;
 </script>
 
-{#if !notes}
+{#if !notes&&order.length>0}
     <div
         on:click={async () => {
             if (checkOutPage == false && order.length > 0) {
@@ -25,7 +26,7 @@
                 if (loading == false) {
                     loading = true;
                     await createOrder(
-                        $categoryStore.uid,// business Id
+                        $categoryStore.uid, // business Id
                         $customerOrderStore.customerId,
                         order,
                         restaurant,
@@ -60,30 +61,46 @@
                 }
             }
         }}
-        class="my-10 
-w-full h-16 fixed left-0 bottom-0
+        class="my-0 
+w-full h-16 mb-1 fixed left-0 bottom-0
 flex justify-center items-center 
 text-white text-md"
     >
         <div
-            class="px-10 {order.length > 0
+            class="px-2 {order.length > 0
                 ? loading
-                    ? 'bg-green-500'
-                    : ' bg-indigo-600'
-                : 'bg-slate-400'} border-white rounded-full shadow"
+                    ? 'bg-green-600'
+                    : !checkOutPage?'bg-indigo-600':' bg-green-500'
+                : 'bg-slate-400'} border-white w-full shadow"
         >
-            <div class="w-full mx-3 py-3 flex justify-center">
+            <div class="w-full mx-1 py-5 shadow-lg">
                 {#if loading == false}
                     {#if !checkOutPage}
-                        Add {order.length} item{order.length >= 0 &&
-                        order.length != 1
-                            ? "s"
-                            : ""} to Order
+                        <div class="flex justify-between">
+                            <span>
+                                    Review Order
+                                <span class="bg-white px-2.5 py-0.5 rounded-full font-bold text-slate-500">
+                                    {order.length}
+                                </span>
+                            </span>
+                            <span class="pr-4">
+                                ugx.{MoneyFormat(total)}
+                            </span>
+                        </div>
                     {:else}
-                        I am ready to eat!
+                        <div class="flex justify-between">
+                            <span> Submit Order 
+                                <span class="bg-white px-2.5 py-0.5 rounded-full font-bold text-slate-500">
+                                    {order.length}
+                                </span>
+                            </span>
+                            <span class="pr-4">
+                                ugx.{MoneyFormat(total)}
+                            </span>
+                        </div>
                     {/if}
                 {:else}
-                    Please wait
+                    <span> Please wait </span>
                 {/if}
             </div>
         </div>

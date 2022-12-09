@@ -14,16 +14,8 @@ const firebaseConfig =
     // storageBucket: config.storagebucket,
     // messagingSenderId: config.messaging_sender_id,
     // appId: config.app_id,
-    // measurementId: config.measurement_id
-    apiKey: "AIzaSyDdxUEeGpzUJok5ZeOrStn-8G88lXNRX-w",
-    authDomain: "cliqrestaurants.firebaseapp.com",
-    projectId: "cliqrestaurants",
-    storageBucket: "cliqrestaurants.appspot.com",
-    messagingSenderId: "385062950946",
-    appId: "1:385062950946:web:dfed13026decb68670d27b",
-    measurementId: "G-TF066078JV"
-};
-
+    // measurementId: config.measurement_id  
+}
 export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app)
 
